@@ -131,10 +131,55 @@
             scroll-behavior: smooth;
         }
 
+        /* Critical au-layout CSS: must load synchronously to prevent
+           truncation race condition with async agentui.css loading.
+           Without these, au-layout renders before its CSS → height
+           miscalculation → content clipped at bottom. */
+        au-layout {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .au-layout-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .au-layout-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
         /* SOTA 2026: Prevent layout shift from scrollbar appearance */
-        /* Applied to .au-layout-main which is the actual scroll container */
         .au-layout-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100%;
+            overflow-y: auto;
             scrollbar-gutter: stable;
+        }
+
+        .au-layout-content {
+            flex: 1;
+        }
+
+        /* au-bottom-nav[hide-on-desktop] must be hidden via CSS BEFORE
+           au-layout._recheckBottomNav() checks its computed display.
+           Without this, has-bottom-nav stays active on desktop, stealing
+           80px from .au-layout-main height (bottom-nav compensation). */
+        @media (min-width: 600px) {
+            au-bottom-nav[hide-on-desktop] {
+                display: none !important;
+            }
         }
 
         body {
@@ -280,9 +325,8 @@
             z-index: 1000;
         }
 
-        /* CLS Prevention: Contain layout for main content */
+        /* CLS Prevention: Reserve space for main content */
         #content-area {
-            contain: layout style;
             min-height: 500px;
             /* Prevent height collapse during route transitions */
             transition: none;
@@ -448,7 +492,7 @@
         <div id="virtual-lists" tabindex="-1" aria-hidden="true"></div>
         <div id="enterprise" tabindex="-1" aria-hidden="true"></div>
         <main id="content-area" class="app-main">
-            <!-- Inline hero: eliminates LCP render delay (image is preloaded in <head>) -->
+            <!-- LCP image kept inline (preloaded in <head>), text loaded async from content/home.html -->
             <div style="text-align: center; margin-bottom: 32px;">
                 <picture>
                     <source srcset="../assets/banner-400.webp 1x, ../assets/banner-800.webp 2x" type="image/webp"><img
@@ -459,7 +503,7 @@
             </div>
             <h1 class="page-title" style="text-align: center;">AgentUI</h1>
             <p class="page-subtitle" style="text-align: center; font-size: 1.25rem; max-width: 600px; margin: 0 auto;">
-                The only AI-First UI framework. 50 components. 1653+ tests. Zero config.</p>
+                The only AI-First UI framework. 50 components. 1670+ tests. Zero config.</p>
         </main>
 
         <!-- Footer -->
@@ -507,14 +551,6 @@
                 return null;
             }
         }
-
-        // Defer component loading
-        const deferFn = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
-        deferFn(() => loadRoute('shell-critical'), { timeout: 500 });
-        deferFn(() => loadRoute('shell-deferred'), { timeout: 1000 });
-
-        // Initial route
-        const initialRoute = window.location.hash ? window.location.hash.slice(1) : 'home';
 
         // Show page with dynamic content loading
         // SOTA 2026: Prefetch content BEFORE View Transition to avoid intermediate states
@@ -687,6 +723,12 @@
             showPage(pageId);
         });
 
+        // Defer component loading (inline CSS handles layout/bottom-nav
+        // before JS, so deferred loading is safe for performance)
+        const deferFn = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+        deferFn(() => loadRoute('shell-critical'), { timeout: 500 });
+        deferFn(() => loadRoute('shell-deferred'), { timeout: 1000 });
+
         // Header scroll elevation
         const appHeader = document.querySelector('.app-header');
         const scrollContainer = document.querySelector('.au-layout-main');
@@ -697,6 +739,7 @@
         }
 
         // Initial page load
+        const initialRoute = window.location.hash ? window.location.hash.slice(1) : 'home';
         showPage(initialRoute);
         console.log('[Shell] Initial load: ' + (performance.now() - perfStart).toFixed(0) + 'ms');
     </script>
