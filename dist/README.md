@@ -5,7 +5,7 @@
 <h1 align="center">AgentUI</h1>
 
 <p align="center">
-  <strong>50 web components that tell AI agents what they can do.</strong>
+  <strong>50 standards-based web components with built-in agent introspection.</strong>
 </p>
 
 <p align="center">
@@ -40,10 +40,24 @@ customElements.get('au-button').describe()
 
 // Or discover the entire framework at once
 const components = await AgentUI.discoverAll()
-// → 50 components, fully documented, at runtime — no docs lookup needed
+// → 50 components, fully described, at runtime
 ```
 
-**No hallucinations. No guessing the API. The UI describes itself.**
+**The UI describes itself — agents query the DOM instead of guessing the API.**
+
+---
+
+## 🤖 Self-Describing Components
+
+Every AgentUI component exposes a `.describe()` method that returns its props, events, slots, and working examples as structured data at runtime.
+
+This is an experiment in **runtime introspection**: instead of relying on external documentation or training data, an Agent can query the live DOM to discover what's available and how to use it.
+
+Whether this approach reduces errors compared to good static documentation + RAG is an open question — and the reason this project exists.
+
+<p align="center">
+  <a href="./PHILOSOPHY.md"><strong>📖 Read the full Philosophy →</strong></a>
+</p>
 
 ---
 
@@ -64,45 +78,30 @@ Security isn't an add-on — it's baked into every component from day one.
 - **XSS-safe `html` template** — All interpolated values are auto-escaped. [Details →](./SECURITY.md)
 - **20 components** with explicit `escapeHTML()` protection on user-facing content.
 - **CSP-compatible** — No `eval()`, no `Function()`, no `document.write`. Works with strict Content Security Policy.
-- **Zero dependencies** — Nothing in `node_modules`. No supply chain risk. No `npm audit` surprises. Ever.
+- **Zero dependencies** — Nothing in `node_modules`. No supply chain risk.
 
-## 🏛️ Built on Standards — No Migration Treadmill
+## 🏛️ Built on Standards
 
-Built on W3C Web Components. The same APIs that work today worked in 2018 and will work in 2030.
+Built on W3C Web Components — native browser APIs with zero abstraction tax.
 
-- **W3C Custom Elements** — Not a framework. Not a compiler. Native browser APIs with zero abstraction tax.
-- **Light DOM** — No Shadow DOM. Full `querySelector` access. Agents can inspect and modify anything.
-- **No breaking changes** — No React 16→17→18→19... No Angular version roulette. The platform IS the framework.
-- **`querySelector` has worked since 1998** — and it will work the same way in your next project, and the one after that.
-
----
-
-## 🤖 Self-Describing Components
-
-What makes AgentUI different from every other component library:
-
-AI agents already write excellent code. The problem isn't code generation — it's **runtime knowledge**. An agent can write a React form from memory, but it can't ask a running application what components are available or what props they accept.
-
-AgentUI gives agents something no other framework does: **runtime introspection of the entire component surface** — props, events, slots, and working examples — without relying on training data or documentation that may be outdated.
-
-<p align="center">
-  <a href="./PHILOSOPHY.md"><strong>📖 Read the full Philosophy →</strong></a>
-</p>
+- **W3C Custom Elements** — Not a framework. Not a compiler. Native browser APIs.
+- **Light DOM** — No Shadow DOM. Full `querySelector` access. Agents can inspect and modify any element directly.
+- **Zero build step** — Works with a `<script>` tag. No bundler required.
 
 ---
 
-## How It Compares
+## Design Choices
 
-| | AgentUI | Typical Framework |
+Every architecture involves trade-offs. Here's what AgentUI optimizes for and what it costs:
+
+| Decision | AgentUI Approach | Trade-off |
 |---|---|---|
-| **Agent Introspection** | `describe()` on every component — runtime API discovery | None — agents rely on memorized docs |
-| **Bundle** | 60KB gzipped (JS+CSS), all 50 components | Tree-shake to ~20KB, then add deps |
-| **Performance** | Lighthouse 100/100/100/100 ([verify](https://pagespeed.web.dev/analysis?url=https://giuseppescottolavina.github.io/AgentUI/demo/)) | Varies |
-| **XSS Protection** | Auto-escape `html` template + `escapeHTML()` in 20 components | Trust your deps |
-| **Dependencies** | Zero. Forever. | npm audit anxiety |
-| **CSP** | No `eval()`, no `Function()` — strict CSP compatible | Often requires `unsafe-eval` |
-| **Stability** | W3C Web Components — same API since 2018 | React 16→17→18→19... |
-| **Accessibility** | ARIA roles, 48px touch targets, keyboard navigation | Add-on library |
+| **Agent Discovery** | `.describe()` on every component — runtime API introspection | Requires metadata maintenance |
+| **Bundle Strategy** | All 50 components in 60KB gzipped | No tree-shaking — you load everything |
+| **XSS Protection** | Auto-escape `html` tagged template | Custom template syntax, not JSX |
+| **Dependencies** | Zero — nothing in `node_modules` | No ecosystem — you build what you need |
+| **DOM Model** | Light DOM (no Shadow DOM) | Full access, but no style encapsulation |
+| **Standard** | W3C Web Components | Newer ecosystem, smaller community |
 
 ---
 
@@ -138,10 +137,8 @@ AgentUI gives agents something no other framework does: **runtime introspection 
 | **Security** | XSS-audited, CSP-compatible, no `eval()`, [full policy →](./SECURITY.md) |
 | **Memory** | Managed listeners (AbortController), zero leaks verified |
 | **DOM Speed** | 500 instantiations <8ms, 500 updates <3ms |
-| **Stability** | W3C Web Components — no framework migration treadmill |
+| **Stability** | W3C Web Components — no framework version churn |
 | **Agent Docs** | [AGENTS.md](./AGENTS.md) (usage), [AGENTS_DEV.md](./AGENTS_DEV.md) (extending), [llms.txt](./llms.txt), [component-schema.json](./component-schema.json) |
-
-> 💡 **Long-term maintainability by design** — `querySelector` has worked the same since 1998 and will work the same in 2030. Zero dependencies means zero abandoned transitive packages and zero "waiting for library X to support framework Y."
 
 ---
 
@@ -160,7 +157,7 @@ AgentUI gives agents something no other framework does: **runtime introspection 
 
 ## Contributing
 
-We welcome contributions of all kinds — bug reports, feature ideas, documentation improvements, and code.
+Contributions of all kinds are welcome — bug reports, feature ideas, documentation improvements, and code.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started, or [open a discussion](https://github.com/GiuseppeScottoLavina/AgentUI/discussions) if you want to talk first.
 
@@ -168,9 +165,11 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started, or [open a discussion](
 
 ## Status
 
-AgentUI is in **alpha** (v0.1.x). The 50 components, agent API, and build system are stable and used in real projects. The API surface may evolve before v1.0.
+AgentUI is an **experimental** library (v0.1.x) built by a single developer. The 50 components and agent API are functional and tested (1670+ tests), but this is a research project exploring runtime introspection for AI agents — not a production framework.
 
-We're building in public — [watch the progress](https://github.com/GiuseppeScottoLavina/AgentUI), [give feedback](https://github.com/GiuseppeScottoLavina/AgentUI/discussions), or [dive in](./CONTRIBUTING.md).
+The core question being tested: **does runtime component introspection meaningfully reduce AI agent errors compared to static documentation?**
+
+Feedback, criticism, and stress-testing are welcome — [open a discussion](https://github.com/GiuseppeScottoLavina/AgentUI/discussions).
 
 ---
 

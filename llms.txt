@@ -48,12 +48,18 @@ Always call `.describe()` and read the `events` field first.
 <noscript><link rel="stylesheet" href="https://unpkg.com/agentui-wc@latest/dist/agentui.css"></noscript>
 <!-- JS -->
 <script type="module" src="https://unpkg.com/agentui-wc@latest/dist/agentui.esm.js" async></script>
-<!-- Font: MD3 default -->
+<!-- Font: system font stack (works offline, no external requests) -->
+<!-- OPTIONAL: replace with @font-face for Google Fonts Roboto if online -->
 <style>
-  @font-face { font-family: 'Roboto'; font-display: swap; src: url('https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmUiA8.woff2') format('woff2'); }
-  body { font-family: var(--md-sys-typescale-font); margin: 0; }
+  body { font-family: var(--md-sys-typescale-font, system-ui, -apple-system, sans-serif); margin: 0; }
 </style>
+<!-- Favicon: inline SVG (prevents 404) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='56' font-size='56'>🎨</text></svg>">
 ```
+
+> **⚠️ PERFORMANCE NOTE**: The full bundle is ~183KB JS + ~95KB CSS. For apps using
+> fewer than 10 components, use chunk imports (see Per-Component Imports below)
+> to reduce unused CSS and achieve Lighthouse Performance ≥90.
 
 Or via npm:
 ```bash
@@ -397,15 +403,12 @@ Use this `<head>` template for Lighthouse 100:
   <!-- JS: async prevents render-blocking -->
   <script type="module" src="https://unpkg.com/agentui-wc@latest/dist/agentui.esm.js" async></script>
 
-  <!-- Font: always use font-display: swap -->
+  <!-- Font: system font stack (OPTIONAL: add @font-face for Roboto if online) -->
   <style>
-    @font-face {
-      font-family: 'Roboto';
-      font-display: swap;
-      src: url('https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmUiA8.woff2') format('woff2');
-    }
-    body { font-family: var(--md-sys-typescale-font); margin: 0; }
+    body { font-family: var(--md-sys-typescale-font, system-ui, -apple-system, sans-serif); margin: 0; }
   </style>
+  <!-- Favicon: inline SVG (prevents 404 in Lighthouse) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='56' font-size='56'>🎨</text></svg>">
 </head>
 ```
 
@@ -424,7 +427,7 @@ Use this `<head>` template for Lighthouse 100:
 
 ### Per-Component Imports (Reduce Bundle Size)
 
-The full bundle is ~181KB JS + ~94KB CSS. For smaller apps, import individual components:
+The full bundle is ~183KB JS + ~95KB CSS. For smaller apps, import individual components:
 
 ```javascript
 // Per-component (only loads what you use):
@@ -433,15 +436,41 @@ import 'agentui-wc/dist/components/au-input.js';
 import 'agentui-wc/dist/components/au-card.js';
 
 // Or use chunks (grouped by feature):
-import 'agentui-wc/dist/chunks/core.js';    // Theme, bus, icons
+import 'agentui-wc/dist/chunks/core.js';    // Theme, bus, au-ready, window.AgentUI
 import 'agentui-wc/dist/chunks/forms.js';   // Button, input, dropdown, etc.
 import 'agentui-wc/dist/chunks/layout.js';  // Layout, drawer, navbar, etc.
 import 'agentui-wc/dist/chunks/display.js'; // Card, chip, avatar, tabs, etc.
-import 'agentui-wc/dist/chunks/feedback.js';// Toast, alert, modal, progress
+import 'agentui-wc/dist/chunks/feedback.js';// Toast, modal, tooltip, confirm
 import 'agentui-wc/dist/chunks/advanced.js';// Datatable, virtual-list, router
 ```
 
-> **Note:** The CSS (`agentui.css`) is monolithic. Unused CSS rules have zero runtime cost.
+> **IMPORTANT:** When using chunks, `core.js` MUST be imported first. It sets up
+> `window.AgentUI`, `auConfirm()`, and emits the `au-ready` event. Without it,
+> `document.addEventListener('au-ready', ...)` will never fire.
+
+### Modular CSS Loading (Reduce Unused CSS)
+
+The full `agentui.css` is ~95KB. While unused rules have zero runtime cost,
+the browser must parse the full file before first paint, which Lighthouse penalizes.
+For optimal Performance scores, load only the CSS you need:
+
+```html
+<!-- Required: design tokens + CSS reset -->
+<link rel="stylesheet" href="agentui-wc/dist/tokens.css">
+<!-- Required: common utilities -->
+<link rel="stylesheet" href="agentui-wc/dist/styles/common.css">
+<!-- Pick only the component CSS you need: -->
+<link rel="stylesheet" href="agentui-wc/dist/styles/components/button.css">
+<link rel="stylesheet" href="agentui-wc/dist/styles/components/input.css">
+<link rel="stylesheet" href="agentui-wc/dist/styles/components/layout.css">
+<link rel="stylesheet" href="agentui-wc/dist/styles/components/navbar.css">
+```
+
+Available CSS files in `dist/styles/components/`:
+animations, avatar, badge, bottom-nav, button, card, checkbox, chip,
+datatable, divider, drawer-item, drawer, grid, icon, input, layout,
+navbar, overlays, progress, prompt-ui, radio, schema-form, splash,
+switch, tabs, tooltip, virtual-list.
 
 ### Server Recommendations (Optional)
 
@@ -491,11 +520,12 @@ Bun.serve({
   <noscript><link rel="stylesheet" href="https://unpkg.com/agentui-wc@latest/dist/agentui.css"></noscript>
   <!-- JS -->
   <script type="module" src="https://unpkg.com/agentui-wc@latest/dist/agentui.esm.js" async></script>
-  <!-- Font: MD3 default -->
+  <!-- Font: system font stack (works offline. OPTIONAL: add @font-face for Roboto if online) -->
   <style>
-    @font-face { font-family: 'Roboto'; font-display: swap; src: url('https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmUiA8.woff2') format('woff2'); }
-    body { font-family: var(--md-sys-typescale-font); margin: 0; }
+    body { font-family: var(--md-sys-typescale-font, system-ui, -apple-system, sans-serif); margin: 0; }
   </style>
+  <!-- Favicon: inline SVG (prevents 404 in Lighthouse) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='56' font-size='56'>🎨</text></svg>">
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
