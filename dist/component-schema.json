@@ -3,8 +3,8 @@
   "$id": "https://agentui.dev/component-schema.json",
   "title": "AgentUI Component Schema",
   "description": "Machine-readable schema for AI agent component discovery",
-  "version": "0.1.132",
-  "generatedAt": "2026-02-13T11:12:09.756Z",
+  "version": "0.1.133",
+  "generatedAt": "2026-02-13T19:09:12.249Z",
   "componentCount": 50,
   "components": {
     "au-card": {
