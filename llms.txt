@@ -3,6 +3,7 @@
 # 50 MD3 Components • Light DOM • Zero Build • Zero Dependencies
 
 > AGENT: This file is your primary reference. For full API docs see AGENTS.md
+> For build recipes and templates, see SKILL.md
 
 ## 🤖 AGENT WORKFLOW (read this FIRST)
 
@@ -1083,6 +1084,7 @@ dist/agentui.d.ts      — TypeScript definitions
 src/components/        — Individual component sources
 src/core/AuElement.js  — Base class (extend for custom)
 AGENTS.md              — Consumer reference (using components)
+SKILL.md               — Build recipes, templates, and agent patterns
 AGENTS_DEV.md          — Developer reference (extending framework)
 ```
 

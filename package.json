@@ -1,6 +1,6 @@
 {
   "name": "agentui-wc",
-  "version": "0.1.132",
+  "version": "0.1.133",
   "type": "module",
   "description": "AI-First Web Components Framework - 50 Material Design 3 components optimized for AI agents",
   "main": "dist/agentui.esm.js",
@@ -12,6 +12,7 @@
     "custom-elements.json",
     "AGENTS.md",
     "AGENTS_DEV.md",
+    "SKILL.md",
     "llms.txt",
     "README.md",
     "CHANGELOG.md",

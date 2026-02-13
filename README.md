@@ -35,7 +35,7 @@
 // Any agent can ask any component what it is and how to use it
 customElements.get('au-button').describe()
 // → { props: { variant: ['filled','outlined','text'], disabled: 'boolean' },
-//     events: ['au-click'],
+//     events: ['click'],
 //     examples: ['<au-button variant="filled">Save</au-button>'] }
 
 // Or discover the entire framework at once
@@ -138,7 +138,7 @@ Every architecture involves trade-offs. Here's what AgentUI optimizes for and wh
 | **Memory** | Managed listeners (AbortController), zero leaks verified |
 | **DOM Speed** | 500 instantiations <8ms, 500 updates <3ms |
 | **Stability** | W3C Web Components — no framework version churn |
-| **Agent Docs** | [AGENTS.md](./AGENTS.md) (usage), [AGENTS_DEV.md](./AGENTS_DEV.md) (extending), [llms.txt](./llms.txt), [component-schema.json](./component-schema.json) |
+| **Agent Docs** | [AGENTS.md](./AGENTS.md) (concepts), [SKILL.md](./SKILL.md) (recipes), [AGENTS_DEV.md](./AGENTS_DEV.md) (extending), [llms.txt](./llms.txt), [component-schema.json](./component-schema.json) |
 
 ---
 
@@ -146,7 +146,8 @@ Every architecture involves trade-offs. Here's what AgentUI optimizes for and wh
 
 | Resource | Description |
 |----------|-------------|
-| [🤖 Agent Guide](./AGENTS.md) | Using components to build apps |
+| [🤖 Agent Guide](./AGENTS.md) | Framework concepts and component discovery |
+| [🧩 Skill Guide](./SKILL.md) | Build recipes, templates, and patterns |
 | [🛠️ Dev Guide](./AGENTS_DEV.md) | Extending framework with new components |
 | [📋 llms.txt](./llms.txt) | Quick reference for LLMs/agents |
 | [💡 Philosophy](./PHILOSOPHY.md) | The deeper "why" behind the design |
