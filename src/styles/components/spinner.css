@@ -1,0 +1,79 @@
+/**
+ * AgentUI Spinner Component Styles
+ * Extracted from components.css for modular loading
+ */
+
+/* ============================================================================
+   SPINNER - MD3 Circular Progress Indicator
+   https://m3.material.io/components/progress-indicators
+   ============================================================================ */
+
+.au-spinner {
+    display: inline-block;
+}
+
+.au-spinner__circle {
+    display: block;
+    border: 3px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin var(--md-sys-motion-duration-extra-long1) linear infinite;
+}
+
+.au-spinner--xs .au-spinner__circle {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.au-spinner--sm .au-spinner__circle {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+}
+
+.au-spinner--md .au-spinner__circle {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+}
+
+.au-spinner--lg .au-spinner__circle {
+    width: 48px;
+    /* MD3: 48dp standard circular diameter */
+    height: 48px;
+    border-width: 4px;
+}
+
+.au-spinner--xl .au-spinner__circle {
+    width: 48px;
+    height: 48px;
+    border-width: 4px;
+}
+
+.au-spinner--primary {
+    color: var(--md-sys-color-primary);
+}
+
+.au-spinner--secondary {
+    color: var(--md-sys-color-secondary);
+}
+
+.au-spinner--current {
+    color: currentColor;
+}
+
+.au-spinner--white {
+    color: white;
+}
+
+/* Required animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

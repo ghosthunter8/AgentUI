@@ -469,9 +469,10 @@ For optimal Performance scores, load only the CSS you need:
 
 Available CSS files in `dist/styles/components/`:
 animations, avatar, badge, bottom-nav, button, card, checkbox, chip,
-datatable, divider, drawer-item, drawer, grid, icon, input, layout,
-navbar, overlays, progress, prompt-ui, radio, schema-form, splash,
-switch, tabs, tooltip, virtual-list.
+code, datatable, divider, drawer-item, drawer, dropdown, fetch, grid,
+icon, input, layout, navbar, overlays, progress, prompt-ui, radio,
+schema-form, skeleton, spinner, splash, stack, switch, tabs,
+theme-toggle, toast, tooltip, virtual-list.
 
 ### Server Recommendations (Optional)
 

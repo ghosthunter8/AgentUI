@@ -1,0 +1,226 @@
+/**
+ * AgentUI Dropdown Component Styles
+ * Extracted from components.css for modular loading
+ */
+
+/* ============================================================================
+   DROPDOWN - MD3 Exposed Dropdown Menu
+   https://m3.material.io/components/menus
+   ============================================================================ */
+
+.au-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* MD3 Trigger - styled like an outlined text field */
+.au-dropdown__trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 200px;
+    height: 56px;
+    /* MD3 standard text field height */
+    padding: 0 16px;
+    background: transparent;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    /* 4dp */
+    font-family: var(--md-sys-typescale-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+        border-color var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard),
+        background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+/* State layer for hover/pressed - MD3 spec */
+.au-dropdown__trigger::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-on-surface);
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.au-dropdown__trigger:hover::before {
+    opacity: var(--md-sys-state-hover-opacity, 0.08);
+}
+
+.au-dropdown__trigger:active::before {
+    opacity: var(--md-sys-state-pressed-opacity, 0.12);
+}
+
+/* Focus state - MD3 uses primary color border */
+.au-dropdown__trigger:focus-visible {
+    outline: none;
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+}
+
+/* Disabled state - MD3 38% opacity */
+.au-dropdown__trigger:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    background: var(--md-sys-color-surface-container);
+}
+
+.au-dropdown__trigger:disabled::before {
+    display: none;
+}
+
+/* Arrow icon - rotates 180° when open */
+.au-dropdown__arrow {
+    flex-shrink: 0;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized);
+}
+
+.au-dropdown.is-open .au-dropdown__arrow {
+    transform: rotate(180deg);
+}
+
+/* Open state - primary border */
+.au-dropdown.is-open .au-dropdown__trigger {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+}
+
+/* MD3 Menu container - now uses Popover API for top-layer */
+.au-dropdown__menu {
+    position: fixed;
+    min-width: 160px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 8px 0;
+    margin: 0;
+    background: var(--md-sys-color-surface-container);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    /* 4dp */
+    box-shadow: var(--md-sys-elevation-level2);
+    list-style: none;
+
+    /* Reset popover UA styles */
+    border: none;
+    inset: unset;
+    /* Let JS position it */
+
+    /* Hidden by default - MD3 enter animation */
+    opacity: 0;
+    visibility: hidden;
+    transform: scaleY(0.92) translateY(-8px);
+    transform-origin: top center;
+    transition:
+        opacity var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized-decelerate),
+        visibility var(--md-sys-motion-duration-short4),
+        transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized-decelerate);
+    pointer-events: none;
+}
+
+/* Popover API: :popover-open pseudo-class (native top-layer) */
+.au-dropdown__menu:popover-open {
+    opacity: 1;
+    visibility: visible;
+    transform: scaleY(1) translateY(0);
+    pointer-events: auto;
+}
+
+/* Fallback: is-open class for older browsers or manual control */
+.au-dropdown__menu.is-open {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: scaleY(1) translateY(0);
+    pointer-events: auto;
+}
+
+/* MD3 Menu items - 48dp height (touch-friendly) */
+.au-dropdown__item,
+.au-dropdown__option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    /* MD3 touch target minimum */
+    padding: 0 16px;
+    font-size: var(--md-sys-typescale-body-large-size);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    overflow: hidden;
+    transition: background var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+/* State layer for options - MD3 spec */
+.au-dropdown__item::before,
+.au-dropdown__option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-on-surface);
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    pointer-events: none;
+}
+
+.au-dropdown__item:hover::before,
+.au-dropdown__option:hover::before {
+    opacity: var(--md-sys-state-hover-opacity, 0.08);
+}
+
+.au-dropdown__item:active::before,
+.au-dropdown__option:active::before {
+    opacity: var(--md-sys-state-pressed-opacity, 0.12);
+}
+
+.au-dropdown__item:focus-visible,
+.au-dropdown__option:focus-visible {
+    outline: none;
+}
+
+.au-dropdown__item:focus-visible::before,
+.au-dropdown__option:focus-visible::before {
+    opacity: var(--md-sys-state-focus-opacity, 0.12);
+}
+
+/* Selected state - secondary container bg */
+.au-dropdown__item.is-selected,
+.au-dropdown__option.is-active {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+.au-dropdown__item.is-selected::before,
+.au-dropdown__option.is-active::before {
+    background: var(--md-sys-color-on-secondary-container);
+}
+
+/* Floating label for dropdown trigger */
+.au-dropdown__label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--md-sys-typescale-body-large-size);
+    color: var(--md-sys-color-on-surface-variant);
+    pointer-events: none;
+    transition:
+        top var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard),
+        font-size var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard),
+        color var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+    background: var(--au-input-label-bg, var(--md-sys-color-surface));
+    padding: 0 4px;
+}
+
+/* Label floats up when dropdown has value or is open */
+.au-dropdown.has-value .au-dropdown__label,
+.au-dropdown.is-open .au-dropdown__label {
+    top: 0;
+    font-size: var(--md-sys-typescale-body-small-size);
+    color: var(--md-sys-color-primary);
+}

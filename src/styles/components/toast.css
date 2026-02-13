@@ -1,0 +1,156 @@
+/**
+ * AgentUI Toast Component Styles
+ * Extracted from components.css for modular loading
+ */
+
+/* ============================================================================
+   TOAST - MD3 Snackbar
+   https://m3.material.io/components/snackbar
+   ============================================================================ */
+
+/* TOAST CONTAINER - Stacked notifications */
+.au-toast-container {
+    position: fixed;
+    z-index: 9999;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+    max-width: 100%;
+    /* Default bottom-center */
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+}
+
+/* Position Variants (Container) */
+.au-toast-container[position="bottom-center"] {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+}
+
+.au-toast-container[position="top-center"] {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.au-toast-container[position="top-right"] {
+    top: 0;
+    right: 0;
+    left: auto;
+    transform: none;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+}
+
+.au-toast-container[position="top-left"] {
+    top: 0;
+    left: 0;
+    right: auto;
+    transform: none;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+}
+
+.au-toast-container[position="bottom-right"] {
+    bottom: 0;
+    right: 0;
+    left: auto;
+    transform: none;
+    align-items: flex-end;
+}
+
+.au-toast-container[position="bottom-left"] {
+    bottom: 0;
+    left: 0;
+    right: auto;
+    transform: none;
+    align-items: flex-start;
+}
+
+/* ITEM */
+.au-toast {
+    position: relative;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 14px 16px;
+    background: var(--md-sys-color-inverse-surface);
+    color: var(--md-sys-color-inverse-on-surface);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    box-shadow: var(--md-sys-elevation-level3);
+    font-size: var(--md-sys-typescale-body-medium-size);
+    min-width: 288px;
+    max-width: 560px;
+    animation: toastEnter 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+@keyframes toastEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.au-toast.is-exiting {
+    animation: toastExit 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes toastExit {
+    to {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+.au-toast--info,
+.au-toast--success,
+.au-toast--warning,
+.au-toast--error {
+    border-left: none;
+}
+
+.au-toast__icon {
+    font-size: 24px;
+}
+
+.au-toast__content {
+    flex: 1;
+}
+
+.au-toast__title {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.au-toast__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    color: var(--md-sys-color-inverse-primary);
+    cursor: pointer;
+}
+
+.au-toast__close:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
