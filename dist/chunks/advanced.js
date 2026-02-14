@@ -77,15 +77,15 @@ import{u as T,x as A}from"./chunk-p1wb5tk8.js";import{B as Z,C as _,D as S,E as 
                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                                 <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
                             </svg>
-                        `},2000)}catch(J){console.error("Copy failed:",J)}})}}_("au-code",B);class I extends Z{static baseClass="au-api-table";static observedAttributes=["type"];render(){let X=this.attr("type","attributes"),Q=Array.from(this.querySelectorAll("au-api-row")),J={attributes:["Name","Type","Default","Description"],properties:["Name","Type","Description"],methods:["Name","Signature","Description"],events:["Name","Detail","Description"],tokens:["Token","Default","Description"]},$=J[X]||J.attributes,G=Q.map((W)=>({name:W.getAttribute("name")||"",type:W.getAttribute("type")||"",default:W.getAttribute("default")||"-",signature:W.getAttribute("signature")||"",detail:W.getAttribute("detail")||"",description:W.textContent.trim()}));this.innerHTML=`
+                        `},2000)}catch(J){console.error("Copy failed:",J)}})}}_("au-code",B);class I extends Z{static baseClass="au-api-table";static observedAttributes=["type"];render(){let X=this.attr("type","attributes"),Q=Array.from(this.querySelectorAll("au-api-row")),J={attributes:["Name","Type","Default","Description"],properties:["Name","Type","Description"],methods:["Name","Signature","Description"],events:["Name","Detail","Description"],tokens:["Token","Default","Description"]},$=J[X]||J.attributes,G=Q.map((W)=>({name:W.getAttribute("name")||"",type:W.getAttribute("type")||"",default:W.getAttribute("default")||"-",signature:W.getAttribute("signature")||"",detail:W.getAttribute("detail")||"",description:W.textContent.trim()}));this.innerHTML=z`
             <table class="au-api-table__table">
                 <thead>
                     <tr>
-                        ${$.map((W)=>`<th>${W}</th>`).join("")}
+                        ${F($.map((W)=>z`<th>${W}</th>`).join(""))}
                     </tr>
                 </thead>
                 <tbody>
-                    ${G.map((W)=>this.#Q(X,W)).join("")}
+                    ${F(G.map((W)=>this.#Q(X,W)).join(""))}
                 </tbody>
             </table>
         `,this.#W()}#Q(X,Q){switch(X){case"attributes":return z`<tr>

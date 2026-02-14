@@ -11,6 +11,7 @@
 export { AuElement, define } from './core/AuElement.js';
 export { bus, UIEvents, showToast } from './core/bus.js';
 export { Theme } from './core/theme.js';
+export { createStore } from './core/store.js';
 
 export { Router } from './core/router.js';
 export { http, HttpError } from './core/http.js';
@@ -227,6 +228,7 @@ import './components/au-doc-page.js';
 // ============================================
 import { Theme } from './core/theme.js';
 import { bus, UIEvents, showToast } from './core/bus.js';
+import { createStore } from './core/store.js';
 
 import { Router } from './core/router.js';
 import { http, HttpError } from './core/http.js';
@@ -244,6 +246,8 @@ if (typeof window !== 'undefined') {
         Theme,
         // Bus
         bus,
+        // Store
+        createStore,
         UIEvents,
         showToast,
 

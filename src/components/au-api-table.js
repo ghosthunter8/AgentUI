@@ -8,7 +8,7 @@
  */
 
 import { AuElement, define } from '../core/AuElement.js';
-import { html } from '../core/utils.js';
+import { html, safe } from '../core/utils.js';
 
 export class AuApiTable extends AuElement {
     static baseClass = 'au-api-table';
@@ -39,15 +39,15 @@ export class AuApiTable extends AuElement {
             description: row.textContent.trim()
         }));
 
-        this.innerHTML = `
+        this.innerHTML = html`
             <table class="au-api-table__table">
                 <thead>
                     <tr>
-                        ${cols.map(c => `<th>${c}</th>`).join('')}
+                        ${safe(cols.map(c => html`<th>${c}</th>`).join(''))}
                     </tr>
                 </thead>
                 <tbody>
-                    ${rowData.map(row => this.#renderRow(type, row)).join('')}
+                    ${safe(rowData.map(row => this.#renderRow(type, row)).join(''))}
                 </tbody>
             </table>
         `;

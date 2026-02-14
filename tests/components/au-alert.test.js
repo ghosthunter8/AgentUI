@@ -216,4 +216,34 @@ describe('au-alert Unit Tests', () => {
         body.appendChild(el);
         expect(el.classList.contains('au-alert')).toBe(true);
     });
+
+    // ========================================
+    // TIMER SAFETY (TDD: raw setTimeout → this.setTimeout)
+    // ========================================
+
+    test('should track deferred init timer for cleanup', () => {
+        // When au-alert has no content, it defers initialization via setTimeout.
+        // This timer MUST be tracked by AuElement's this.setTimeout() so that
+        // disconnectedCallback can clean it up. Raw setTimeout would not be tracked.
+        const el = document.createElement('au-alert');
+        // Don't set any content — triggers the deferred path
+        body.appendChild(el);
+
+        // The deferred timer should be tracked in _timers
+        expect(el._timers.size).toBeGreaterThan(0);
+    });
+
+    test('should survive disconnect before deferred init', () => {
+        // Create element with empty content to trigger deferred path
+        const el = document.createElement('au-alert');
+        body.appendChild(el);
+
+        // Immediately remove — this should not throw
+        expect(() => {
+            el.remove();
+        }).not.toThrow();
+
+        // Element should be disconnected
+        expect(el.isConnected).toBe(false);
+    });
 });

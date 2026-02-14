@@ -311,6 +311,4 @@ export class AuDrawer extends AuElement {
     }
 }
 
-if (!customElements.get('au-drawer')) {
-    customElements.define('au-drawer', AuDrawer);
-}
+define('au-drawer', AuDrawer);

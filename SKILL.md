@@ -14,6 +14,9 @@
 |---------|-------------|
 | [🔥 Schema Form Showcase](#-schema-form-showcase) | Auto-generate entire forms from JSON Schema |
 | [🤖 Ready-to-Use Agent Patterns](#-ready-to-use-agent-patterns) | Form data, input values, theme control, discovery |
+| [🗄️ State Management](#️-state-management-createstore) | Reactive store with persistence — `createStore()` |
+| [📡 Event Bus](#-event-bus-bus) | Component-to-component communication — `bus` |
+| [🔗 Advanced Patterns](#-advanced-patterns-store--components) | DataTable + Store, Form + Store, API Cache |
 | [🏗️ PWA App Shell Components](#️-pwa-app-shell-components-built-in) | Templates: dashboard, e-commerce, admin, full-bleed |
 | [🚀 Modern App Shell Pattern](#-modern-app-shell-pattern-recommended) | Lazy loading, performance, 100/100 Lighthouse |
 | [📋 Common Patterns](#common-patterns-copy-these) | Forms, modals, tabs, toast, drag & drop |
@@ -204,6 +207,250 @@ Theme.set('light');
 
 // Get current theme
 const current = Theme.get(); // 'dark' | 'light'
+```
+
+---
+
+## 🗄️ State Management (`createStore`)
+
+> **Built-in reactive store.** Proxy-based, zero dependencies, optional localStorage persistence.
+
+#### Basic Usage
+```javascript
+import { createStore } from 'agentui-wc';
+// Or via global: const store = AgentUI.createStore(...)
+
+const store = createStore(
+    { tasks: [], filter: 'all', count: 0 },
+    { persist: 'my-app' }  // optional: auto-save to localStorage
+);
+
+// Read state
+console.log(store.state.tasks);
+
+// Write state → subscribers notified automatically
+store.state.count = 42;
+
+// Subscribe to a specific key
+const unsub = store.subscribe('count', (newVal, oldVal) => {
+    document.querySelector('#counter').textContent = newVal;
+});
+
+// Subscribe to ALL changes
+store.subscribe('*', (key, newVal, oldVal) => {
+    console.log(`${key} changed: ${oldVal} → ${newVal}`);
+});
+
+// Cleanup
+unsub();
+store.destroy();
+```
+
+#### API Reference
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `state` | `store.state` | Reactive proxy — read/write properties directly |
+| `subscribe` | `subscribe(key, cb)` → `unsub()` | Watch a key or `'*'` for all. Returns unsubscribe fn |
+| `batch` | `batch(fn)` | Group changes — subscribers notified once at end |
+| `getState` | `getState()` → `Object` | Returns a plain copy (not the proxy) |
+| `setState` | `setState(partial)` | Merge partial state, notify affected subscribers |
+| `destroy` | `destroy()` | Clear all subscribers |
+
+#### Persistence Pattern
+```javascript
+// Auto-saves to localStorage under key "agentui:kanban"
+const store = createStore(
+    { columns: [], tasks: [] },
+    { persist: 'kanban' }
+);
+// On page reload, state is restored automatically.
+// Corrupt JSON is handled silently (falls back to initial state).
+```
+
+#### Kanban Example (Store + Components)
+```javascript
+const store = createStore(
+    { tasks: [], filter: 'all' },
+    { persist: 'kanban-app' }
+);
+
+// Render when tasks change
+store.subscribe('tasks', (tasks) => {
+    const list = document.getElementById('task-list');
+    list.innerHTML = tasks
+        .filter(t => store.state.filter === 'all' || t.status === store.state.filter)
+        .map(t => `<au-card variant="outlined" data-id="${t.id}">
+            <h3>${t.title}</h3>
+            <au-chip>${t.status}</au-chip>
+        </au-card>`).join('');
+});
+
+// Add task
+function addTask(title) {
+    store.state.tasks = [...store.state.tasks, {
+        id: Date.now(), title, status: 'todo'
+    }];
+}
+
+// Batch multiple changes (single re-render)
+store.batch(() => {
+    store.state.filter = 'done';
+    store.state.tasks = store.state.tasks.map(t => 
+        t.id === 123 ? { ...t, status: 'done' } : t
+    );
+});
+```
+
+---
+
+## 📡 Event Bus (`bus`)
+
+> **Built-in event bus for component-to-component communication.** LightBus — lightweight, zero dependencies.
+
+#### Basic Usage
+```javascript
+import { bus, UIEvents, showToast } from 'agentui-wc';
+// Or via global: AgentUI.bus, AgentUI.showToast
+
+// Subscribe
+const unsub = bus.on('task:created', (data) => {
+    console.log('New task:', data.title);
+});
+
+// Emit
+bus.emit('task:created', { title: 'Buy milk', id: 42 });
+
+// One-time listener
+bus.once('app:initialized', () => console.log('App ready'));
+
+// Cleanup
+unsub();
+```
+
+#### Built-in UI Events
+```javascript
+import { bus, UIEvents, showToast } from 'agentui-wc';
+
+// Toast (preferred shorthand)
+showToast('Saved!', { severity: 'success', duration: 3000 });
+
+// Or via bus directly
+bus.emit(UIEvents.TOAST_SHOW, { message: 'Error!', severity: 'error' });
+
+// Listen for framework events
+bus.on(UIEvents.THEME_CHANGE, (data) => console.log('Theme:', data));
+bus.on(UIEvents.FORM_SUBMIT, (data) => console.log('Form:', data));
+bus.on(UIEvents.MODAL_OPEN, () => console.log('Modal opened'));
+```
+
+| Event Constant | Value | Fired When |
+|---------------|-------|------------|
+| `UIEvents.TOAST_SHOW` | `ui:toast:show` | Toast requested |
+| `UIEvents.TOAST_DISMISS` | `ui:toast:dismiss` | Toast dismissed |
+| `UIEvents.MODAL_OPEN` | `ui:modal:open` | Modal opened |
+| `UIEvents.MODAL_CLOSE` | `ui:modal:close` | Modal closed |
+| `UIEvents.THEME_CHANGE` | `ui:theme:change` | Theme toggled |
+| `UIEvents.FORM_SUBMIT` | `ui:form:submit` | Form submitted |
+| *(bus event)* | `au:route-change` | Route changed (includes `previous`) |
+
+#### When to Use Store vs Bus
+
+| Use Case | Use |
+|----------|-----|
+| App state (tasks, user data, settings) | `createStore()` |
+| UI notifications (toasts, modals) | `bus` / `showToast()` |
+| Cross-component events ("task created") | `bus.emit()` / `bus.on()` |
+| Persistent data (survives reload) | `createStore({ persist: '...' })` |
+
+---
+
+## 🔗 Advanced Patterns (Store + Components)
+
+> **`createStore()` shines when connecting app-level state to UI components.**
+
+#### DataTable + Store — Reactive Data Source
+
+```javascript
+import { createStore } from 'agentui-wc';
+
+const store = createStore(
+    { users: [], filter: '', sortField: null },
+    { persist: 'admin-panel' }
+);
+
+// Fetch → Store → Table (one-way data flow)
+const table = document.querySelector('au-datatable');
+
+store.subscribe('users', () => {
+    const filtered = store.state.users.filter(u =>
+        u.name.toLowerCase().includes(store.state.filter.toLowerCase())
+    );
+    table.setData(filtered);
+});
+
+store.subscribe('filter', () => {
+    // Re-trigger the users subscriber by reading the current value
+    store.state.users = [...store.state.users];
+});
+
+// Load data
+const res = await fetch('/api/users');
+store.state.users = await res.json();  // table auto-updates
+
+// Search input
+searchInput.addEventListener('au-change', (e) => {
+    store.state.filter = e.detail.value;
+});
+```
+
+#### Form + Store — Two-Way Data Binding
+
+```javascript
+import { createStore, bus } from 'agentui-wc';
+
+const store = createStore({ email: '', name: '', role: 'user' });
+
+// Store → Form (populate fields on load)
+const form = document.querySelector('au-form');
+store.subscribe('*', (key, newVal) => {
+    const field = form.querySelector(`[name="${key}"]`);
+    if (field && field.value !== newVal) field.value = newVal;
+});
+
+// Form → Store (sync on submit)
+form.addEventListener('au-submit', (e) => {
+    store.setState(e.detail.data);
+    bus.emit('user:saved', store.getState());
+});
+
+// Pre-populate from API
+const user = await fetch('/api/me').then(r => r.json());
+store.setState(user);
+```
+
+#### API Cache + Store — Shared Fetch Cache
+
+```javascript
+import { createStore } from 'agentui-wc';
+
+const cache = createStore({}, { persist: 'api-cache' });
+
+async function cachedFetch(url, maxAge = 60_000) {
+    const entry = cache.state[url];
+    if (entry && Date.now() - entry.ts < maxAge) return entry.data;
+
+    const data = await fetch(url).then(r => r.json());
+    cache.state[url] = { data, ts: Date.now() };
+    return data;
+}
+
+// Multiple components share the cache
+const users = await cachedFetch('/api/users');     // fetches
+const again = await cachedFetch('/api/users');     // cached!
+
+// Invalidate
+delete cache.state['/api/users'];
 ```
 
 ---

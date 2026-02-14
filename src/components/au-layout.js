@@ -181,6 +181,4 @@ export class AuLayout extends AuElement {
     }
 }
 
-if (!customElements.get('au-layout')) {
-    customElements.define('au-layout', AuLayout);
-}
+define('au-layout', AuLayout);

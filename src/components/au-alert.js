@@ -19,11 +19,15 @@ export class AuAlert extends AuElement {
 
         // For AJAX-loaded content: defer entire initialization until HTML parser finishes
         // This is necessary because super.connectedCallback() calls render(),
-        // and render needs the content to be available
+        // and render needs the content to be available.
+        // Note: this.setTimeout() works before super.connectedCallback() because
+        // _timers is a class field initialized at construction time.
         if (!this.#originalContent && !this.querySelector('.au-alert__content') && !this.innerHTML.trim()) {
             // Content not yet available, defer initialization
-            setTimeout(() => {
+            this.setTimeout(() => {
+                if (!this.isConnected) return; // Guard: element may have been removed
                 this.#originalContent = this.innerHTML;
+                super.connectedCallback();
                 this.#initializeComponent();
             }, 0);
         } else {
@@ -31,13 +35,12 @@ export class AuAlert extends AuElement {
             if (!this.#originalContent && !this.querySelector('.au-alert__content')) {
                 this.#originalContent = this.innerHTML;
             }
+            super.connectedCallback();
             this.#initializeComponent();
         }
     }
 
     #initializeComponent() {
-        super.connectedCallback();
-
         // Event delegation for close button
         this.listen(this, 'click', (e) => {
             if (e.target.classList.contains('au-alert__close')) {

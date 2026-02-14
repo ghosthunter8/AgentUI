@@ -370,15 +370,7 @@ export class AuMessageBubble extends AuElement {
 }
 
 // Register all components
-if (!customElements.get('au-prompt-input')) {
-    customElements.define('au-prompt-input', AuPromptInput);
-}
-if (!customElements.get('au-code-block')) {
-    customElements.define('au-code-block', AuCodeBlock);
-}
-if (!customElements.get('au-agent-toolbar')) {
-    customElements.define('au-agent-toolbar', AuAgentToolbar);
-}
-if (!customElements.get('au-message-bubble')) {
-    customElements.define('au-message-bubble', AuMessageBubble);
-}
+define('au-prompt-input', AuPromptInput);
+define('au-code-block', AuCodeBlock);
+define('au-agent-toolbar', AuAgentToolbar);
+define('au-message-bubble', AuMessageBubble);

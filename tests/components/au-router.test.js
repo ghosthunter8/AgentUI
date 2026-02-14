@@ -117,4 +117,34 @@ describe('au-router Unit Tests', () => {
         expect(source).toContain("import { html } from '../core/utils.js'");
         expect(source).toMatch(/container\.innerHTML\s*=\s*html`/);
     });
+
+    // ─── BUS INTEGRATION ──────────────────────────────────────────
+    test('should import bus from core/bus.js', async () => {
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-router.js', import.meta.url),
+            'utf-8'
+        );
+        expect(source).toContain("import");
+        expect(source).toContain("bus");
+        expect(source).toContain("bus.js");
+    });
+
+    test('should emit au:route-change on bus (source inspection)', async () => {
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-router.js', import.meta.url),
+            'utf-8'
+        );
+        expect(source).toContain("bus.emit('au:route-change'");
+    });
+
+    test('bus event payload should include previous route', async () => {
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-router.js', import.meta.url),
+            'utf-8'
+        );
+        expect(source).toContain('previous');
+    });
 });

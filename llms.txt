@@ -360,6 +360,49 @@ if (ok) deleteItem();
 
 ---
 
+## STATE MANAGEMENT (`createStore`)
+
+```javascript
+import { createStore } from 'agentui-wc';
+// Or: AgentUI.createStore(...)
+
+// Create reactive store with optional localStorage persistence
+const store = createStore(
+    { tasks: [], filter: 'all', count: 0 },
+    { persist: 'my-app' }  // auto-save to localStorage under "agentui:my-app"
+);
+
+// Read/write (Proxy-based — changes trigger subscribers)
+store.state.count = 42;
+
+// Subscribe to key
+const unsub = store.subscribe('count', (newVal, oldVal) => { /* update UI */ });
+
+// Subscribe to all changes
+store.subscribe('*', (key, newVal, oldVal) => { /* ... */ });
+
+// Batch changes (single notification)
+store.batch(() => { store.state.count = 1; store.state.filter = 'done'; });
+
+// Snapshot
+const copy = store.getState();    // plain object (not proxy)
+store.setState({ count: 0 });     // partial merge, notifies affected subscribers
+
+// Cleanup
+unsub();
+store.destroy();
+```
+
+**Store vs Bus:**
+| Use | Tool |
+|-----|------|
+| App state (tasks, data, settings) | `createStore()` |
+| UI notifications (toast, modal) | `bus` / `showToast()` |
+| Cross-component events | `bus.emit()` / `bus.on()` |
+| Persistent data (reload-safe) | `createStore({ persist: '...' })` |
+
+---
+
 ## 🚀 PERFORMANCE (Lighthouse 100)
 
 ### CLS Prevention (Built-In — Zero Config)

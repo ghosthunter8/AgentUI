@@ -113,6 +113,4 @@ export class AuBottomNav extends AuElement {
     }
 }
 
-if (!customElements.get('au-bottom-nav')) {
-    customElements.define('au-bottom-nav', AuBottomNav);
-}
+define('au-bottom-nav', AuBottomNav);

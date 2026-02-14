@@ -141,19 +141,15 @@ export class AuDrawerItem extends AuElement {
 // Also export as au-nav-item alias for bottom navigation
 export { AuDrawerItem as AuNavItem };
 
-if (!customElements.get('au-drawer-item')) {
-    customElements.define('au-drawer-item', AuDrawerItem);
-}
+define('au-drawer-item', AuDrawerItem);
 
 // Register alias - au-nav-item defaults to vertical layout
-if (!customElements.get('au-nav-item')) {
-    customElements.define('au-nav-item', class extends AuDrawerItem {
-        connectedCallback() {
-            // Set vertical layout by default for bottom-nav items
-            if (!this.hasAttribute('layout')) {
-                this.setAttribute('layout', 'vertical');
-            }
-            super.connectedCallback();
+define('au-nav-item', class extends AuDrawerItem {
+    connectedCallback() {
+        // Set vertical layout by default for bottom-nav items
+        if (!this.hasAttribute('layout')) {
+            this.setAttribute('layout', 'vertical');
         }
-    });
-}
+        super.connectedCallback();
+    }
+});

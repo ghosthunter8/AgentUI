@@ -336,9 +336,9 @@ export class AuSchemaForm extends AuElement {
 
     render() {
         if (!this._schema || !this._schema.properties) {
-            this.innerHTML = `
+            this.innerHTML = html`
                 <div class="au-schema-form-empty-state">
-                    Set the <code>schema</code> property to generate a form
+                    ${safe('Set the <code>schema</code> property to generate a form')}
                 </div>
             `;
             return;
@@ -432,6 +432,4 @@ export class AuSchemaForm extends AuElement {
     }
 }
 
-if (!customElements.get('au-schema-form')) {
-    customElements.define('au-schema-form', AuSchemaForm);
-}
+define('au-schema-form', AuSchemaForm);

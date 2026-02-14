@@ -102,6 +102,29 @@ export declare function getRegisteredComponents(): Record<string, any>;
 export declare function getComponentsForSignal(signal: string): string[];
 
 // ============================================
+// REACTIVE STORE
+// ============================================
+export interface Store<T extends Record<string, any>> {
+    /** Reactive state proxy — read and write properties directly */
+    readonly state: T;
+    /** Subscribe to changes on a specific key or '*' for all changes */
+    subscribe(key: keyof T | '*', callback: (...args: any[]) => void): () => void;
+    /** Batch multiple changes — subscribers notified once at the end */
+    batch(fn: () => void): void;
+    /** Get a plain copy of the current state */
+    getState(): T;
+    /** Replace state properties and notify affected subscribers */
+    setState(newState: Partial<T>): void;
+    /** Destroy the store — clears all subscribers */
+    destroy(): void;
+}
+
+export declare function createStore<T extends Record<string, any>>(
+    initialState: T,
+    options?: { persist?: string }
+): Store<T>;
+
+// ============================================
 // VIEW TRANSITIONS 
 // ============================================
 export declare const supportsViewTransitions: boolean;

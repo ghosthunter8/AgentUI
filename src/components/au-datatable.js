@@ -476,6 +476,4 @@ export class AuDataTable extends AuElement {
     }
 }
 
-if (!customElements.get('au-datatable')) {
-    customElements.define('au-datatable', AuDataTable);
-}
+define('au-datatable', AuDataTable);

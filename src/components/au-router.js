@@ -17,6 +17,7 @@
 
 import { AuElement, define } from '../core/AuElement.js';
 import { html } from '../core/utils.js';
+import { bus } from '../core/bus.js';
 
 class AuRouter extends AuElement {
     static baseClass = 'au-router';
@@ -62,10 +63,14 @@ class AuRouter extends AuElement {
         // Skip if same route
         if (hash === this.#currentRoute) return;
 
+        const previous = this.#currentRoute;
         this.#currentRoute = hash;
 
-        // Emit route-change event
+        // Emit route-change DOM event (original — backward-compatible)
         this.emit('au-route-change', { route: hash });
+
+        // Emit route-change on the global bus (decoupled from DOM tree)
+        bus.emit('au:route-change', { route: hash, previous });
 
         // Load page
         await this.#loadPage(hash);
