@@ -52,10 +52,7 @@ au-datatable {
     border-color: var(--md-sys-color-primary);
 }
 
-.au-datatable-info {
-    font-size: var(--md-sys-typescale-body-small-size);
-    color: var(--md-sys-color-on-surface-variant);
-}
+/* toolbar-level info removed — row count is now in footer */
 
 .au-datatable-table {
     width: 100%;
@@ -133,7 +130,7 @@ au-datatable {
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.au-datatable-pagination {
+.au-datatable-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -142,7 +139,7 @@ au-datatable {
     background: var(--md-sys-color-surface-container-low);
 }
 
-.au-datatable-pagination-info {
+.au-datatable-footer-info {
     font-size: var(--md-sys-typescale-body-small-size);
     color: var(--md-sys-color-on-surface-variant);
 }
@@ -177,4 +174,3 @@ au-datatable {
     color: var(--md-sys-color-on-primary);
     border-color: var(--md-sys-color-primary);
 }
-

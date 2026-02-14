@@ -294,25 +294,14 @@ export class AuDataTable extends AuElement {
 
         // Surgical update: only update tbody and info if already rendered
         const existingTbody = this.querySelector('.au-datatable-table tbody');
-        const existingInfo = this.querySelector('.au-datatable-info');
-        const existingPagination = this.querySelector('.au-datatable-pagination');
+        const existingFooter = this.querySelector('.au-datatable-footer');
 
         if (!fullRender && existingTbody) {
             // Update only the parts that changed
             existingTbody.innerHTML = this._renderTbody(pageData, columns, startIdx, allSelected);
 
-            if (existingInfo) {
-                existingInfo.innerHTML = `${totalRows} row${totalRows !== 1 ? 's' : ''}${this._selectedRows.size > 0 ? ` · ${this._selectedRows.size} selected` : ''}`;
-            }
-
-            if (existingPagination) {
-                existingPagination.innerHTML = this._renderPaginationContent(page, totalPages, totalRows);
-            } else if (totalPages > 1) {
-                // Need to add pagination
-                const wrapper = this.querySelector('.au-datatable-wrapper');
-                if (wrapper) {
-                    wrapper.insertAdjacentHTML('beforeend', this._renderPagination(page, totalPages, totalRows));
-                }
+            if (existingFooter) {
+                existingFooter.innerHTML = this._renderFooterContent(page, totalPages, totalRows);
             }
 
             this._attachEventListeners();
@@ -330,10 +319,6 @@ export class AuDataTable extends AuElement {
                                 placeholder="Search..." 
                                 value="${this._filterValue}"
                             >
-                        </div>
-                        <div class="au-datatable-info">
-                            ${totalRows} row${totalRows !== 1 ? 's' : ''}
-                            ${this._selectedRows.size > 0 ? ` · ${this._selectedRows.size} selected` : ''}
                         </div>
                     </div>
                 ` : ''}
@@ -373,7 +358,7 @@ export class AuDataTable extends AuElement {
                     </tbody>
                 </table>
 
-                ${safe(this._renderPagination(page, totalPages, totalRows))}
+                ${safe(this._renderFooter(page, totalPages, totalRows))}
             </div>
         `;
 
@@ -416,19 +401,27 @@ export class AuDataTable extends AuElement {
         }).join('');
     }
 
-    _renderPagination(page, totalPages, totalRows) {
-        if (totalPages <= 1) return '';
+    _renderFooter(page, totalPages, totalRows) {
         return `
-            <div class="au-datatable-pagination">
-                ${this._renderPaginationContent(page, totalPages, totalRows)}
+            <div class="au-datatable-footer">
+                ${this._renderFooterContent(page, totalPages, totalRows)}
             </div>
         `;
     }
 
-    _renderPaginationContent(page, totalPages, totalRows) {
+    _renderFooterContent(page, totalPages, totalRows) {
+        const selectedCount = this._selectedRows.size;
+        const rowInfo = `${totalRows} row${totalRows !== 1 ? 's' : ''}${selectedCount > 0 ? ` · ${selectedCount} selected` : ''}`;
+
+        if (totalPages <= 1) {
+            return `
+                <div class="au-datatable-footer-info">${rowInfo}</div>
+            `;
+        }
+
         return `
-            <div class="au-datatable-pagination-info">
-                Showing ${(page - 1) * this.pageSize + 1}–${Math.min(page * this.pageSize, totalRows)} of ${totalRows}
+            <div class="au-datatable-footer-info">
+                Showing ${(page - 1) * this.pageSize + 1}–${Math.min(page * this.pageSize, totalRows)} of ${rowInfo}
             </div>
             <div class="au-datatable-pagination-controls">
                 <button class="au-datatable-pagination-btn" data-page="prev" ${page <= 1 ? 'disabled' : ''}>

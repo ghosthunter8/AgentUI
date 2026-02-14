@@ -399,4 +399,60 @@ describe('au-datatable Unit Tests', () => {
         const tablesAfter = el.querySelectorAll('table').length;
         expect(tablesAfter).toBe(tablesBefore);
     });
+
+    // ─── ROW COUNT UX (MD3 compliance) ────────────────────────────
+    test('toolbar should NOT contain row count info', () => {
+        const el = document.createElement('au-datatable');
+        el.setAttribute('columns', JSON.stringify(SAMPLE_COLUMNS));
+        el.setAttribute('filterable', '');
+        body.appendChild(el);
+
+        el.setData(SAMPLE_DATA);
+        const toolbar = el.querySelector('.au-datatable-toolbar');
+        expect(toolbar).toBeTruthy();
+        // Toolbar should only have search, NOT row count
+        const info = toolbar.querySelector('.au-datatable-info');
+        expect(info).toBeNull();
+    });
+
+    test('footer should always show row count even without pagination', () => {
+        const el = document.createElement('au-datatable');
+        el.setAttribute('columns', JSON.stringify(SAMPLE_COLUMNS));
+        body.appendChild(el);
+
+        el.setData(SAMPLE_DATA); // 5 rows, default pageSize 10 → no pagination
+        const footer = el.querySelector('.au-datatable-footer');
+        expect(footer).toBeTruthy();
+        expect(footer.textContent).toContain('5');
+        expect(footer.textContent).toContain('row');
+    });
+
+    test('footer should contain row count with pagination controls', () => {
+        const el = document.createElement('au-datatable');
+        el.setAttribute('columns', JSON.stringify(SAMPLE_COLUMNS));
+        el.setAttribute('page-size', '2');
+        body.appendChild(el);
+
+        el.setData(SAMPLE_DATA);
+        const footer = el.querySelector('.au-datatable-footer');
+        expect(footer).toBeTruthy();
+        // Should show both row count AND pagination
+        expect(footer.textContent).toContain('5');
+        expect(footer.querySelector('.au-datatable-pagination-controls')).toBeTruthy();
+    });
+
+    test('footer row count should update after filtering', () => {
+        const el = document.createElement('au-datatable');
+        el.setAttribute('columns', JSON.stringify(SAMPLE_COLUMNS));
+        el.setAttribute('filterable', '');
+        body.appendChild(el);
+
+        el.setData(SAMPLE_DATA);
+        el.filter('Alice');
+        const footer = el.querySelector('.au-datatable-footer');
+        expect(footer).toBeTruthy();
+        // After filtering, should show filtered count
+        expect(footer.textContent).toContain('1');
+        expect(footer.textContent).toContain('row');
+    });
 });
