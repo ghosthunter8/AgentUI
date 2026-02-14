@@ -147,4 +147,33 @@ describe('au-router Unit Tests', () => {
         );
         expect(source).toContain('previous');
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    // BUG #4: No XSS via raw innerHTML injection from untrusted response
+    test('should NOT shadow html import with local variable (XSS fix)', async () => {
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-router.js', import.meta.url),
+            'utf-8'
+        );
+        // The local variable must be called pageHtml, not html
+        expect(source).toContain('const pageHtml = await response.text()');
+        // Must NOT have: const html = await response.text()
+        expect(source).not.toContain('const html = await response.text()');
+    });
+
+    test('fallback path should use textContent, not innerHTML (XSS prevention)', async () => {
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-router.js', import.meta.url),
+            'utf-8'
+        );
+        // The else branch (no au-page found) must use textContent, not innerHTML
+        expect(source).toContain('container.textContent = pageHtml');
+        // Must NOT have raw innerHTML in the fallback
+        expect(source).not.toContain('container.innerHTML = pageHtml');
+    });
 });

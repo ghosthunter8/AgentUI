@@ -301,4 +301,35 @@ describe('createStore', () => {
         store1.destroy();
         store2.destroy();
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    // BUG #6: batch() should always persist after flushing (dead code removed)
+    test('batch should persist after changes are flushed', () => {
+        const store = createStore({ count: 0, name: 'init' }, { persist: 'test-batch-persist' });
+        store.batch(() => {
+            store.state.count = 42;
+            store.state.name = 'updated';
+        });
+        // After batch, localStorage should have persisted values
+        const saved = JSON.parse(mockLocalStorage.getItem('agentui:test-batch-persist'));
+        expect(saved.count).toBe(42);
+        expect(saved.name).toBe('updated');
+        store.destroy();
+    });
+
+    test('batch should persist even when all values revert to original', () => {
+        const store = createStore({ count: 5 }, { persist: 'test-batch-revert' });
+        store.batch(() => {
+            store.state.count = 99;  // change
+            store.state.count = 5;   // revert to original
+        });
+        // Persist should still have been called (no dead code gate)
+        const saved = JSON.parse(mockLocalStorage.getItem('agentui:test-batch-revert'));
+        expect(saved).toBeDefined();
+        expect(saved.count).toBe(5);
+        store.destroy();
+    });
 });

@@ -99,11 +99,11 @@ class AuRouter extends AuElement {
                 throw new Error(`Page not found: ${route}`);
             }
 
-            const html = await response.text();
+            const pageHtml = await response.text();
 
             // Parse the au-page and extract template content
             const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+            const doc = parser.parseFromString(pageHtml, 'text/html');
             const muPage = doc.querySelector('au-page');
 
             if (muPage) {
@@ -126,7 +126,8 @@ class AuRouter extends AuElement {
                     document.title = `${title} | AgentUI`;
                 }
             } else {
-                container.innerHTML = html;
+                // Sanitize: use textContent to prevent XSS from untrusted HTML
+                container.textContent = pageHtml;
             }
 
             this.emit('au-page-loaded', { route });

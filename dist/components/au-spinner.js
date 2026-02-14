@@ -1,4 +1,4 @@
-import{p as x,q as y}from"./chunk-gkgym1ts.js";class B extends x{static baseClass="au-spinner";static observedAttributes=["size","color"];render(){if(this.querySelector(".au-spinner__spinner"))return;if(!this.hasAttribute("role"))this.setAttribute("role","progressbar");if(!this.hasAttribute("aria-label"))this.setAttribute("aria-label","Loading");this.innerHTML=`<div class="au-spinner__progress">
+import{p as x,q as y}from"./chunk-4tm8p8jh.js";class B extends x{static baseClass="au-spinner";static observedAttributes=["size","color"];render(){if(this.querySelector(".au-spinner__spinner"))return;if(!this.hasAttribute("role"))this.setAttribute("role","progressbar");if(!this.hasAttribute("aria-label"))this.setAttribute("aria-label","Loading");this.innerHTML=`<div class="au-spinner__progress">
     <div class="au-spinner__spinner">
         <div class="au-spinner__left"><div class="au-spinner__circle"></div></div>
         <div class="au-spinner__right"><div class="au-spinner__circle"></div></div>

@@ -111,6 +111,9 @@ export function createRipple(element, event, options = {}) {
     return ripple;
 }
 
+/** @type {WeakSet<HTMLElement>} Tracks elements with ripple attached */
+const _rippleElements = new WeakSet();
+
 /**
  * Attach ripple effect to an element.
  * @param {HTMLElement} element - Element to attach ripple to
@@ -118,6 +121,12 @@ export function createRipple(element, event, options = {}) {
  * @returns {Function} Cleanup function to remove ripple listener
  */
 export function attachRipple(element, options = {}) {
+    // Guard: don't attach duplicate listeners
+    if (_rippleElements.has(element)) {
+        return () => { }; // no-op cleanup (original cleanup is still valid)
+    }
+    _rippleElements.add(element);
+
     const handler = (e) => {
         // Don't create ripple if element is disabled
         if (element.hasAttribute('disabled')) return;
@@ -128,6 +137,7 @@ export function attachRipple(element, options = {}) {
 
     // Return cleanup function
     return () => {
+        _rippleElements.delete(element);
         element.removeEventListener('pointerdown', handler);
     };
 }
@@ -145,6 +155,11 @@ export const RippleMixin = (superclass) => class extends superclass {
      * @param {Object} options - Ripple options
      */
     initRipple(target = this, options = {}) {
+        // Clean up previous ripple attachment if any
+        if (this.#rippleCleanup) {
+            this.#rippleCleanup();
+            this.#rippleCleanup = null;
+        }
         this.#rippleCleanup = attachRipple(target, options);
     }
 

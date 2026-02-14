@@ -163,4 +163,31 @@ describe('au-modal Unit Tests', () => {
         el.open();
         expect(el.classList.contains('is-open')).toBe(true);
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    // BUG #2: close() must emit au-close exactly ONCE (was emitting twice)
+    // The native 'close' event handler must NOT also emit au-close
+    test('native close handler should NOT emit au-close (source inspection)', async () => {
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-modal.js', import.meta.url),
+            'utf-8'
+        );
+
+        // Find the native 'close' event listener setup
+        const closeHandlerStart = source.indexOf("this.listen(this.#dialog, 'close'");
+        expect(closeHandlerStart).toBeGreaterThan(-1);
+
+        // Extract the close handler body (from start to next });
+        const handlerBlock = source.slice(closeHandlerStart, closeHandlerStart + 400);
+        const firstClosingBrace = handlerBlock.indexOf('});');
+        const handlerBody = handlerBlock.slice(0, firstClosingBrace);
+
+        // The native handler must NOT contain emit('au-close')
+        expect(handlerBody).not.toContain("emit('au-close')");
+        expect(handlerBody).not.toContain('emit("au-close")');
+    });
 });

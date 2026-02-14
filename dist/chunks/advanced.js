@@ -1,4 +1,4 @@
-import{u as T,x as A}from"./chunk-p1wb5tk8.js";import{B as Z,C as _,D as S,E as F,F as z}from"./chunk-xszd71ng.js";class R extends Z{static baseClass="au-virtual-list";static cssFile=null;static observedAttributes=["item-height","buffer"];#Q=[];#W=(X)=>z`<div>${X}</div>`;#Y=0;#X=0;#$=0;#G=null;#U=null;set items(X){this.#Q=X||[],this.#J()}get items(){return this.#Q}set renderItem(X){this.#W=X,this.#J()}connectedCallback(){super.connectedCallback()}render(){let X=parseInt(this.attr("item-height","50"));this.innerHTML=`
+import{u as T,x as A}from"./chunk-p1wb5tk8.js";import{B as Z,C as _,D as S,E as F,F as z}from"./chunk-7hqcgf3q.js";class R extends Z{static baseClass="au-virtual-list";static cssFile=null;static observedAttributes=["item-height","buffer"];#Q=[];#W=(X)=>z`<div>${X}</div>`;#Y=0;#X=0;#$=0;#G=null;#U=null;set items(X){this.#Q=X||[],this.#J()}get items(){return this.#Q}set renderItem(X){this.#W=X,this.#J()}connectedCallback(){super.connectedCallback()}render(){let X=parseInt(this.attr("item-height","50"));this.innerHTML=`
             <div class="au-virtual-list__viewport" style="
                 height: 100%;
                 overflow-y: auto;

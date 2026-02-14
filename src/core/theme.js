@@ -64,7 +64,7 @@ export const Theme = {
             ? localStorage.getItem('au-theme')
             : null;
 
-        if (oldKey && !_store.state.preference) {
+        if (oldKey && _store.state.preference === 'auto') {
             // Migrate from old format
             this.set(oldKey);
             try { localStorage.removeItem('au-theme'); } catch (e) { /* silent */ }

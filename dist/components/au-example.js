@@ -1,4 +1,4 @@
-import{m as z,n as Y,o as j}from"./chunk-0f7ph7sp.js";import{p as $,q as v}from"./chunk-gkgym1ts.js";class x extends ${static baseClass="au-example";static observedAttributes=["title"];#q=!1;render(){let K=this.attr("title","Example"),D=this.querySelector('[slot="demo"]'),F=this.querySelector('[slot="code"]'),J=D?D.innerHTML:"",Q=F?F.textContent:D?D.innerHTML:"";if(D)D.remove();if(F)F.remove();let G=this.#D(Q),V=z(G);this.innerHTML=j`
+import{m as z,n as Y,o as j}from"./chunk-0f7ph7sp.js";import{p as $,q as v}from"./chunk-4tm8p8jh.js";class x extends ${static baseClass="au-example";static observedAttributes=["title"];#q=!1;render(){let K=this.attr("title","Example"),D=this.querySelector('[slot="demo"]'),F=this.querySelector('[slot="code"]'),J=D?D.innerHTML:"",Q=F?F.textContent:D?D.innerHTML:"";if(D)D.remove();if(F)F.remove();let G=this.#D(Q),V=z(G);this.innerHTML=j`
             <div class="au-example__card">
                 <div class="au-example__header">
                     <span class="au-example__title">${K}</span>

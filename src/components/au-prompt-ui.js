@@ -80,8 +80,39 @@ export class AuPromptInput extends AuElement {
     }
 
     attributeChangedCallback(name, oldVal, newVal) {
-        if (this.isConnected && oldVal !== newVal) {
+        if (!this.isConnected || oldVal === newVal) return;
+        // Surgical update: don't destroy DOM (preserves user's input value)
+        const container = this.querySelector('.au-prompt-input-container');
+        if (!container) {
             this.render();
+            return;
+        }
+        switch (name) {
+            case 'loading': {
+                container.classList.toggle('au-prompt-input-loading', this.loading);
+                const submitBtn = this.querySelector('.au-prompt-input-submit');
+                if (submitBtn) {
+                    submitBtn.disabled = this.disabled || this.loading;
+                    submitBtn.innerHTML = this.loading
+                        ? '<div class="au-prompt-input-spinner"></div>'
+                        : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+                }
+                break;
+            }
+            case 'disabled': {
+                const input = this.querySelector('.au-prompt-input-field');
+                const submitBtn = this.querySelector('.au-prompt-input-submit');
+                if (input) input.disabled = this.disabled;
+                if (submitBtn) submitBtn.disabled = this.disabled || this.loading;
+                break;
+            }
+            case 'placeholder': {
+                const input = this.querySelector('.au-prompt-input-field');
+                if (input) input.placeholder = this.placeholder;
+                break;
+            }
+            default:
+                this.render();
         }
     }
 
@@ -173,7 +204,9 @@ export class AuCodeBlock extends AuElement {
     }
 
     async _copy() {
-        const code = this.textContent.trim();
+        // Read ONLY from the <code> element, not the entire component textContent
+        const codeEl = this.querySelector('code');
+        const code = codeEl ? codeEl.textContent.trim() : '';
         try {
             await navigator.clipboard.writeText(code);
             const btn = this.querySelector('.au-code-block-copy-btn');

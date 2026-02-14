@@ -150,7 +150,7 @@ describe('au-dropdown Unit Tests', () => {
         });
     });
 
-    test('value setter should update attribute but NOT the displayed label', () => {
+    test('value setter should update attribute AND the displayed label', () => {
         const el = document.createElement('au-dropdown');
         el.setAttribute('placeholder', 'Select priority');
         el.innerHTML = '<au-option value="low">Low</au-option><au-option value="high">High</au-option>';
@@ -158,13 +158,12 @@ describe('au-dropdown Unit Tests', () => {
 
         return new Promise(resolve => {
             setTimeout(() => {
-                // Using .value = sets the attribute...
+                // Using .value = should update BOTH the attribute AND the displayed text
                 el.value = 'high';
                 expect(el.getAttribute('value')).toBe('high');
 
-                // ...but the displayed text still shows the placeholder
                 const valueDisplay = el.querySelector('.au-dropdown__value');
-                expect(valueDisplay?.textContent).toBe('Select priority');
+                expect(valueDisplay?.textContent).toBe('High');
                 resolve();
             }, 0);
         });
@@ -187,4 +186,88 @@ describe('au-dropdown Unit Tests', () => {
             }, 0);
         });
     });
+
+    // ========================================================================
+    // BUG FIX TDD TESTS — Dropdown Value Reflection
+    // ========================================================================
+
+    test('setAttribute("value") should also update the displayed label', () => {
+        const el = document.createElement('au-dropdown');
+        el.innerHTML = '<au-option value="x">Option X</au-option><au-option value="y">Option Y</au-option>';
+        body.appendChild(el);
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+                el.setAttribute('value', 'y');
+                const valueDisplay = el.querySelector('.au-dropdown__value');
+                expect(valueDisplay?.textContent).toBe('Option Y');
+                resolve();
+            }, 0);
+        });
+    });
+
+    test('value setter should NOT emit au-select event', () => {
+        const el = document.createElement('au-dropdown');
+        el.innerHTML = '<au-option value="a">A</au-option><au-option value="b">B</au-option>';
+        body.appendChild(el);
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+                const events = [];
+                el.addEventListener('au-select', e => events.push(e));
+                el.value = 'b';
+                // Programmatic value set should NOT emit au-select
+                expect(events.length).toBe(0);
+                resolve();
+            }, 0);
+        });
+    });
+
+    test('value setter with unknown value should not crash', () => {
+        const el = document.createElement('au-dropdown');
+        el.innerHTML = '<au-option value="a">A</au-option>';
+        body.appendChild(el);
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+                // Setting a value that doesn't match any option
+                expect(() => { el.value = 'nonexistent'; }).not.toThrow();
+                // Attribute is still set
+                expect(el.getAttribute('value')).toBe('nonexistent');
+                resolve();
+            }, 0);
+        });
+    });
+
+    test('value setter should mark matching option as active', () => {
+        const el = document.createElement('au-dropdown');
+        el.innerHTML = '<au-option value="a">A</au-option><au-option value="b">B</au-option>';
+        body.appendChild(el);
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+                el.value = 'b';
+                const options = el.querySelectorAll('.au-dropdown__option');
+                const activeOpt = Array.from(options).find(o => o.classList.contains('is-active'));
+                expect(activeOpt?.getAttribute('data-value')).toBe('b');
+                resolve();
+            }, 0);
+        });
+    });
+
+    test('disabled attribute should disable trigger button', () => {
+        const el = document.createElement('au-dropdown');
+        el.innerHTML = '<au-option value="a">A</au-option>';
+        body.appendChild(el);
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+                el.setAttribute('disabled', '');
+                const trigger = el.querySelector('.au-dropdown__trigger');
+                expect(trigger?.disabled).toBe(true);
+                resolve();
+            }, 0);
+        });
+    });
 });
+

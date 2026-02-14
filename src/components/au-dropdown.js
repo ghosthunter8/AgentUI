@@ -16,6 +16,7 @@ export class AuDropdown extends AuElement {
     #menu = null;
     #trigger = null;
     #options = []; // Store options data
+    #isSelecting = false; // Guard to prevent attributeChangedCallback loop from select()
 
     connectedCallback() {
         super.connectedCallback();
@@ -28,6 +29,27 @@ export class AuDropdown extends AuElement {
     disconnectedCallback() {
         super.disconnectedCallback();
         this.#menu?.remove();
+    }
+
+    attributeChangedCallback(name, oldVal, newVal) {
+        if (!this.isConnected || oldVal === newVal) return;
+
+        if (name === 'value' && newVal !== null && !this.#isSelecting) {
+            // Look up the option and update displayed label (no event emission)
+            const opt = this.#options.find(o => o.value === newVal);
+            if (opt) {
+                const valueEl = this.querySelector('.au-dropdown__value');
+                if (valueEl) valueEl.textContent = opt.label;
+                this.#menu?.querySelectorAll('.au-dropdown__option').forEach(o =>
+                    o.classList.toggle('is-active', o.getAttribute('data-value') === newVal)
+                );
+            }
+        }
+
+        if (name === 'disabled') {
+            const trigger = this.querySelector('.au-dropdown__trigger');
+            if (trigger) trigger.disabled = this.hasAttribute('disabled');
+        }
     }
 
     render() {
@@ -218,6 +240,7 @@ export class AuDropdown extends AuElement {
     }
 
     select(value, label) {
+        this.#isSelecting = true;
         const valueEl = this.querySelector('.au-dropdown__value');
         if (valueEl) valueEl.textContent = label;
 
@@ -228,6 +251,7 @@ export class AuDropdown extends AuElement {
 
         this.emit('au-select', { value, label });
         this.close();
+        this.#isSelecting = false;
     }
 
     get value() { return this.getAttribute('value') || ''; }

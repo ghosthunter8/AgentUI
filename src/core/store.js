@@ -156,9 +156,7 @@ export function createStore(initialState, options = {}) {
                     }
                 }
                 _batchChanges.clear();
-                if (_batchChanges.size === 0) {
-                    _persist();
-                }
+                _persist();
             }
         },
 

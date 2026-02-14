@@ -383,5 +383,109 @@ describe('bus Module Unit Tests', () => {
         bus.setMaxListeners(100);
         console.warn = origWarn;
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    // BUG #1: bus.off() must actually remove the listener
+    test('off should actually prevent listener from receiving further events', () => {
+        let callCount = 0;
+        const callback = () => { callCount++; };
+        const eventName = 'test-off-regression-' + Date.now();
+
+        bus.on(eventName, callback);
+        bus.emit(eventName, { test: true });
+        expect(callCount).toBe(1);
+
+        // off() should remove the listener
+        bus.off(eventName, callback);
+        bus.emit(eventName, { test: true });
+        expect(callCount).toBe(1); // should NOT increase
+    });
+
+    test('off should not affect other listeners on the same event', () => {
+        let countA = 0, countB = 0;
+        const callbackA = () => { countA++; };
+        const callbackB = () => { countB++; };
+        const eventName = 'test-off-multi-' + Date.now();
+
+        bus.on(eventName, callbackA);
+        bus.on(eventName, callbackB);
+
+        // Remove only A
+        bus.off(eventName, callbackA);
+        bus.emit(eventName, {});
+
+        expect(countA).toBe(0); // removed
+        expect(countB).toBe(1); // still active
+
+        bus.off(eventName, callbackB); // cleanup
+    });
+
+    test('unsubscribe function from on() should also work correctly', () => {
+        let callCount = 0;
+        const eventName = 'test-unsub-fn-' + Date.now();
+
+        const unsub = bus.on(eventName, () => { callCount++; });
+        bus.emit(eventName, {});
+        expect(callCount).toBe(1);
+
+        unsub();
+        bus.emit(eventName, {});
+        expect(callCount).toBe(1); // should NOT increase
+    });
+
+    // BUG #12: AGENTUI_VERSION must match package.json
+    test('AGENTUI_VERSION should be 0.1.144', () => {
+        expect(AGENTUI_VERSION).toBe('0.1.144');
+    });
+
+    // BUG #14: inbound hooks should run once per event, not once per listener
+    test('inbound hooks should be called exactly once per emit, regardless of listener count', () => {
+        let hookCallCount = 0;
+        const eventName = 'test-hook-once-' + Date.now();
+
+        const removeHook = addInboundHook((payload) => {
+            hookCallCount++;
+            return payload;
+        });
+
+        // Register multiple listeners
+        const unsub1 = bus.on(eventName, () => { });
+        const unsub2 = bus.on(eventName, () => { });
+        const unsub3 = bus.on(eventName, () => { });
+
+        bus.emit(eventName, { test: true });
+
+        expect(hookCallCount).toBe(1); // once per event, NOT 3 (once per listener)
+
+        // Cleanup
+        removeHook();
+        unsub1();
+        unsub2();
+        unsub3();
+    });
+
+    test('outbound hooks should also be called exactly once per emit', () => {
+        let hookCallCount = 0;
+        const eventName = 'test-outbound-hook-once-' + Date.now();
+
+        const removeHook = addOutboundHook((payload) => {
+            hookCallCount++;
+            return payload;
+        });
+
+        const unsub1 = bus.on(eventName, () => { });
+        const unsub2 = bus.on(eventName, () => { });
+
+        bus.emit(eventName, { test: true });
+
+        expect(hookCallCount).toBe(1);
+
+        removeHook();
+        unsub1();
+        unsub2();
+    });
 });
 

@@ -287,4 +287,30 @@ describe('au-toast Component', () => {
         expect(toast).not.toBeNull();
         expect(toast.tagName.toLowerCase()).toBe('au-toast');
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    // BUG #10: dismiss() must use this.listen() not raw addEventListener
+    test('dismiss() should use managed listener (source inspection)', async () => {
+        // Read the source and verify this.listen() is used instead of raw addEventListener
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-toast.js', import.meta.url),
+            'utf-8'
+        );
+
+        // Find the dismiss METHOD definition (not a call to dismiss())
+        const dismissStart = source.indexOf('dismiss() {');
+        expect(dismissStart).toBeGreaterThan(-1);
+
+        // Extract a reasonable block from the method
+        const dismissBlock = source.slice(dismissStart, dismissStart + 500);
+
+        // Must use this.listen(this, 'animationend' — managed listener
+        expect(dismissBlock).toContain("this.listen(this, 'animationend'");
+        // Must NOT use raw addEventListener
+        expect(dismissBlock).not.toContain("this.addEventListener('animationend'");
+    });
 });

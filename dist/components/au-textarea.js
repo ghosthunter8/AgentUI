@@ -1,4 +1,4 @@
-import{o as z}from"./chunk-0f7ph7sp.js";import{p as k,q}from"./chunk-gkgym1ts.js";class B extends k{static baseClass="au-textarea";static cssFile="input";static observedAttributes=["placeholder","rows","disabled","readonly","name"];#g=null;render(){if(!this.querySelector(".au-textarea__field")){let g=this.attr("placeholder",""),D=this.attr("rows","4"),G=this.has("disabled")?"disabled":"",H=this.has("readonly")?"readonly":"",I=this.attr("name","");this.innerHTML=z`
+import{o as z}from"./chunk-0f7ph7sp.js";import{p as k,q}from"./chunk-4tm8p8jh.js";class B extends k{static baseClass="au-textarea";static cssFile="input";static observedAttributes=["placeholder","rows","disabled","readonly","name"];#g=null;render(){if(!this.querySelector(".au-textarea__field")){let g=this.attr("placeholder",""),D=this.attr("rows","4"),G=this.has("disabled")?"disabled":"",H=this.has("readonly")?"readonly":"",I=this.attr("name","");this.innerHTML=z`
                 <textarea 
                     class="au-textarea__field"
                     placeholder="${g}"

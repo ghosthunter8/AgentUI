@@ -59,11 +59,12 @@ export class AuModal extends AuElement {
         if (!this.#dialog) return;
 
         // Native dialog 'close' event (fires on ESC, form[method=dialog], or .close())
+        // Note: Do NOT emit au-close here — close() method handles that.
+        // This handler catches external closes (e.g., form[method=dialog]).
         this.listen(this.#dialog, 'close', () => {
             this.removeAttribute('open');
             this.classList.remove('is-open', 'is-visible');
             document.body.style.overflow = '';
-            this.emit('au-close');
         });
 
         // ESC key triggers 'cancel' event on dialog

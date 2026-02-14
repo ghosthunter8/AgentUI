@@ -88,7 +88,7 @@ export class AuToast extends AuElement {
             }
         };
 
-        this.addEventListener('animationend', cleanup, { once: true });
+        this.listen(this, 'animationend', cleanup, { once: true });
         // Fallback in case animation doesn't fire (test env, reduced motion)
         this.setTimeout(cleanup, 200);
     }

@@ -14,7 +14,7 @@
  */
 
 /** AgentUI framework version */
-export const AGENTUI_VERSION = '0.1.116';
+export const AGENTUI_VERSION = '0.1.144';
 
 // Window Singleton Pattern — shared bus across split bundles/chunks
 const GLOBAL_BUS_KEY = '__AGENTUI_BUS__';
@@ -81,19 +81,20 @@ class LightBus {
     emitSync(event, data) {
         let payload = { event, data };
 
-        // Apply outbound hooks
+        // Apply outbound hooks (once per event)
         for (const hook of this.#outboundHooks) {
             payload = hook(payload, { event }) ?? payload;
+        }
+
+        // Apply inbound hooks (once per event, not per listener)
+        let inPayload = payload;
+        for (const hook of this.#inboundHooks) {
+            inPayload = hook(inPayload, { event }) ?? inPayload;
         }
 
         const listeners = this.#listeners.get(event);
         if (listeners) {
             for (const cb of listeners) {
-                // Apply inbound hooks
-                let inPayload = payload;
-                for (const hook of this.#inboundHooks) {
-                    inPayload = hook(inPayload, { event }) ?? inPayload;
-                }
                 cb(inPayload);
             }
         }
@@ -102,7 +103,7 @@ class LightBus {
         for (const [pattern, patternListeners] of this.#listeners) {
             if (pattern.endsWith('*') && event.startsWith(pattern.slice(0, -1)) && pattern !== event) {
                 for (const cb of patternListeners) {
-                    cb(payload);
+                    cb(inPayload);
                 }
             }
         }
@@ -198,6 +199,9 @@ if (!globalScope[COMPONENT_REGISTRY_KEY]) {
 }
 const componentRegistry = globalScope[COMPONENT_REGISTRY_KEY];
 
+// Track original→wrapped callback mapping for bus.off() support
+const _callbackMap = new WeakMap();
+
 /**
  * Simplified bus wrapper for AgentUI components
  */
@@ -209,10 +213,20 @@ export const bus = {
      * @returns {Function} Unsubscribe function
      */
     on(event, callback) {
-        const subscription = lightBus.on(event, (eventData) => {
+        const wrappedCb = (eventData) => {
             callback(eventData.data ?? eventData);
-        });
-        return () => subscription.unsubscribe();
+        };
+        // Store mapping so off() can find the wrapped version
+        if (!_callbackMap.has(callback)) {
+            _callbackMap.set(callback, new Map());
+        }
+        _callbackMap.get(callback).set(event, wrappedCb);
+
+        const subscription = lightBus.on(event, wrappedCb);
+        return () => {
+            subscription.unsubscribe();
+            _callbackMap.get(callback)?.delete(event);
+        };
     },
 
     /** Subscribe once */
@@ -225,7 +239,11 @@ export const bus = {
 
     /** Unsubscribe */
     off(event, callback) {
-        lightBus.off(event, callback);
+        const wrappedCb = _callbackMap.get(callback)?.get(event);
+        if (wrappedCb) {
+            lightBus.off(event, wrappedCb);
+            _callbackMap.get(callback)?.delete(event);
+        }
     },
 
     /**

@@ -50,7 +50,6 @@ export class AuErrorBoundary extends AuElement {
     #hasError = false;
     #error = null;
     #originalContent = '';
-    #originalOnerror = null;
 
     connectedCallback() {
         super.connectedCallback();
@@ -62,32 +61,14 @@ export class AuErrorBoundary extends AuElement {
         this.listen(this, 'error', this.#handleError.bind(this));
 
         // Also catch unhandled errors from child scripts
-        this.#setupGlobalErrorHandler();
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        // Restore original window.onerror to prevent global state pollution
-        window.onerror = this.#originalOnerror;
-    }
-
-    #setupGlobalErrorHandler() {
-        // Capture errors that occur within this boundary
-        this.#originalOnerror = window.onerror;
-
-        window.onerror = (message, source, lineno, colno, error) => {
-            // Check if error originated from within this boundary
-            if (this.#isErrorFromChild(error)) {
-                this.#handleError({ detail: { error, message } });
-                return true; // Prevent propagation
+        // Uses this.listen() for automatic cleanup via AbortController on disconnect
+        // Multiple boundaries can coexist — each has its own listener
+        this.listen(window, 'error', (e) => {
+            if (this.#isErrorFromChild(e.error)) {
+                this.#handleError({ detail: { error: e.error, message: e.message } });
+                e.preventDefault();
             }
-
-            // Call original handler if exists
-            if (this.#originalOnerror) {
-                return this.#originalOnerror(message, source, lineno, colno, error);
-            }
-            return false;
-        };
+        });
     }
 
     #isErrorFromChild(error) {

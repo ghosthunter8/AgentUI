@@ -402,4 +402,100 @@ describe('au-prompt-ui Unit Tests', () => {
             expect(message).toBeTruthy();
         });
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    describe('Bug Fix Regressions', () => {
+
+        // BUG #3: _copy() must read only from <code> element, not entire textContent
+        test('au-code-block: _copy source should read from code element only', async () => {
+            const fs = await import('fs');
+            const source = fs.readFileSync(
+                new URL('../../src/components/au-prompt-ui.js', import.meta.url),
+                'utf-8'
+            );
+            // Must use querySelector('code') not this.textContent
+            expect(source).toContain("this.querySelector('code')");
+            expect(source).toContain('codeEl.textContent');
+            // Verify the old pattern is NOT present
+            const copyMethod = source.slice(
+                source.indexOf('async _copy()'),
+                source.indexOf('}', source.indexOf('async _copy()') + 200) + 1
+            );
+            expect(copyMethod).not.toContain('this.textContent.trim()');
+        });
+
+        test('au-code-block: render should place code in code element and Copy button in header', () => {
+            const el = document.createElement('au-code-block');
+            el.textContent = 'console.log("hello")';
+            body.appendChild(el);
+
+            const codeEl = el.querySelector('code');
+            const copyBtn = el.querySelector('.au-code-block-copy-btn');
+            const header = el.querySelector('.au-code-block-header');
+
+            // Both elements must exist
+            expect(codeEl).toBeTruthy();
+            expect(copyBtn).toBeTruthy();
+            expect(header).toBeTruthy();
+
+            // Copy button must be inside header, NOT inside code
+            expect(header.querySelector('.au-code-block-copy-btn')).toBeTruthy();
+        });
+
+        // BUG #5: Attribute changes should NOT destroy user input
+        test('au-prompt-input: setting loading should NOT destroy user input', () => {
+            const el = document.createElement('au-prompt-input');
+            body.appendChild(el);
+
+            // Simulate user typing
+            const input = el.querySelector('.au-prompt-input-field');
+            el._value = 'User typed this';
+            input.value = 'User typed this';
+
+            // Now set loading — this triggers attributeChangedCallback
+            el.setAttribute('loading', '');
+
+            // Input value must be preserved
+            const inputAfter = el.querySelector('.au-prompt-input-field');
+            expect(inputAfter).toBeTruthy();
+            expect(inputAfter.value).toBe('User typed this');
+        });
+
+        test('au-prompt-input: changing disabled should NOT destroy user input', () => {
+            const el = document.createElement('au-prompt-input');
+            body.appendChild(el);
+
+            // Simulate user typing
+            const input = el.querySelector('.au-prompt-input-field');
+            el._value = 'My text';
+            input.value = 'My text';
+
+            // Toggle disabled — should do surgical update
+            el.setAttribute('disabled', '');
+
+            const inputAfter = el.querySelector('.au-prompt-input-field');
+            expect(inputAfter).toBeTruthy();
+            expect(inputAfter.value).toBe('My text');
+            expect(inputAfter.disabled).toBe(true);
+        });
+
+        test('au-prompt-input: loading should toggle spinner in submit button', () => {
+            const el = document.createElement('au-prompt-input');
+            body.appendChild(el);
+
+            // Initially no spinner
+            expect(el.querySelector('.au-prompt-input-spinner')).toBeFalsy();
+
+            // Set loading
+            el.setAttribute('loading', '');
+            expect(el.querySelector('.au-prompt-input-spinner')).toBeTruthy();
+
+            // Remove loading
+            el.removeAttribute('loading');
+            expect(el.querySelector('.au-prompt-input-spinner')).toBeFalsy();
+        });
+    });
 });

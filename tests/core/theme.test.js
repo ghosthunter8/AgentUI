@@ -218,4 +218,27 @@ describe('Theme Module', () => {
         Theme.destroy();
         expect(mediaListeners.length).toBeLessThan(listenersBefore);
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    // BUG #7: migration from old 'au-theme' key should work when preference is 'auto' (default)
+    test('init() should migrate old au-theme key when store preference is auto', () => {
+        // Store preference is 'auto' (default) — migration MUST happen
+        mockStorage['au-theme'] = 'dark';
+        Theme.init();
+        expect(Theme.get()).toBe('dark');
+        // Old key should be removed after migration
+        expect(mockStorage['au-theme']).toBeUndefined();
+    });
+
+    test('init() should NOT migrate old key when preference is explicitly set', () => {
+        // Simulate a user who already set a preference
+        Theme.set('light');  // This persists 'light' in the store
+        mockStorage['au-theme'] = 'dark';  // Old key from previous version
+        Theme.init();
+        // Should use the explicitly saved preference, not the old key
+        expect(Theme.get()).toBe('light');
+    });
 });

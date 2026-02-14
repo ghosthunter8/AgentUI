@@ -349,15 +349,18 @@ describe('au-error-boundary Unit Tests', () => {
         expect(last.context.originalContent).toContain('Context content');
     });
 
-    // ─── window.onerror (lines 67-84) ──────────────────────────
-    test('source: window.onerror handler should be installed', async () => {
+    // ─── Global error catching ──────────────────────────────────
+
+    test('source: should use addEventListener("error") not window.onerror', async () => {
         const fs = await import('fs');
         const source = fs.readFileSync(
             new URL('../../src/components/au-error-boundary.js', import.meta.url),
             'utf-8'
         );
-        expect(source).toContain('window.onerror');
-        expect(source).toContain('#setupGlobalErrorHandler');
+        // Should NOT use window.onerror override (fragile chain)
+        expect(source).not.toContain('window.onerror');
+        // Should use this.listen(window, 'error', ...) for auto-cleanup
+        expect(source).toMatch(/this\.listen\(window/);
     });
 
     test('source: #isErrorFromChild should check error stack', async () => {
@@ -380,45 +383,81 @@ describe('au-error-boundary Unit Tests', () => {
         expect(source).toMatch(/this\.innerHTML\s*=\s*html`/);
     });
 
-    // ─── disconnectedCallback: window.onerror restore (FIX 1) ──
-    test('disconnectedCallback should restore original window.onerror', () => {
-        // Set a custom handler before connect
-        const originalHandler = () => 'original';
-        dom.window.onerror = originalHandler;
+    // ─── Multi-boundary coexistence (BUG FIX TDD) ──────────────
+    test('multiple boundaries should not override window.onerror', () => {
+        // Save original
+        const original = dom.window.onerror;
 
-        const el = document.createElement('au-error-boundary');
-        el.innerHTML = '<p>Content</p>';
-        body.appendChild(el);
+        const el1 = document.createElement('au-error-boundary');
+        el1.innerHTML = '<p>Boundary 1</p>';
+        body.appendChild(el1);
 
-        // After connect, window.onerror should have been replaced
-        expect(dom.window.onerror).not.toBe(originalHandler);
+        const el2 = document.createElement('au-error-boundary');
+        el2.innerHTML = '<p>Boundary 2</p>';
+        body.appendChild(el2);
 
-        // After disconnect, original should be restored
-        body.removeChild(el);
-        expect(dom.window.onerror).toBe(originalHandler);
+        // window.onerror should NOT have been changed
+        expect(dom.window.onerror).toBe(original);
 
-        // Cleanup
-        dom.window.onerror = null;
+        body.removeChild(el2);
+        body.removeChild(el1);
     });
 
-    test('multiple connect/disconnect cycles should not break onerror chain', () => {
-        const sentinel = () => 'sentinel';
-        dom.window.onerror = sentinel;
+    test('removing one boundary should not affect another', () => {
+        const el1 = document.createElement('au-error-boundary');
+        el1.innerHTML = '<p>Boundary 1</p>';
+        body.appendChild(el1);
+
+        const el2 = document.createElement('au-error-boundary');
+        el2.innerHTML = '<p>Boundary 2</p>';
+        body.appendChild(el2);
+
+        // Remove el1 — el2 should still be functional
+        body.removeChild(el1);
+
+        // el2 should still be connected and usable
+        expect(el2.isConnected).toBe(true);
+        expect(el2.hasError).toBe(false);
+
+        // Trigger error on el2 — should still work
+        if (el2.__listeners?.['error']) {
+            const fakeEvent = {
+                detail: { error: new Error('after sibling remove'), message: 'test' },
+                stopPropagation: () => { }
+            };
+            for (const fn of el2.__listeners['error']) {
+                fn.call(el2, fakeEvent);
+            }
+        }
+        expect(el2.hasError).toBe(true);
+
+        body.removeChild(el2);
+    });
+
+    test('connect/disconnect cycles should not leak global state', () => {
+        const originalOnerror = dom.window.onerror;
 
         const el = document.createElement('au-error-boundary');
         el.innerHTML = '<p>Content</p>';
 
-        // Cycle 1: connect then disconnect
+        // Cycle 1
         body.appendChild(el);
         body.removeChild(el);
-        expect(dom.window.onerror).toBe(sentinel);
+        expect(dom.window.onerror).toBe(originalOnerror);
 
-        // Cycle 2: reconnect then disconnect again
+        // Cycle 2
         body.appendChild(el);
         body.removeChild(el);
-        expect(dom.window.onerror).toBe(sentinel);
+        expect(dom.window.onerror).toBe(originalOnerror);
+    });
 
-        // Cleanup
-        dom.window.onerror = null;
+    test('source: should NOT have #originalOnerror field (no manual restore needed)', async () => {
+        const fs = await import('fs');
+        const source = fs.readFileSync(
+            new URL('../../src/components/au-error-boundary.js', import.meta.url),
+            'utf-8'
+        );
+        // The fix removes the fragile #originalOnerror pattern
+        expect(source).not.toContain('#originalOnerror');
     });
 });

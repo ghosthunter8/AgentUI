@@ -186,4 +186,89 @@ describe('core/ripple.js', () => {
             instance.disconnectedCallback();
         });
     });
+
+    // ========================================================================
+    // BUG FIX TDD TESTS — Listener Accumulation Prevention
+    // ========================================================================
+
+    describe('Listener Accumulation Fix', () => {
+
+        test('attachRipple called twice should not add duplicate listeners', () => {
+            const el = mockElement();
+            let listenerCount = 0;
+            const origAdd = el.addEventListener.bind(el);
+            el.addEventListener = function (type, ...args) {
+                if (type === 'pointerdown') listenerCount++;
+                return origAdd(type, ...args);
+            };
+
+            attachRipple(el);
+            attachRipple(el); // second call
+
+            // Only ONE pointerdown listener should be added
+            expect(listenerCount).toBe(1);
+        });
+
+        test('original cleanup should still work after duplicate attachRipple call', () => {
+            const el = mockElement();
+            const cleanup1 = attachRipple(el);
+            const cleanup2 = attachRipple(el); // duplicate — should return no-op
+
+            // cleanup2 should be a no-op, not throw
+            expect(() => cleanup2()).not.toThrow();
+
+            // cleanup1 should still work and actually remove the listener
+            expect(() => cleanup1()).not.toThrow();
+        });
+
+        test('after cleanup, element can be re-attached', () => {
+            const el = mockElement();
+            const cleanup1 = attachRipple(el);
+            cleanup1(); // removes ripple
+
+            // Second attachment should work (not be guarded)
+            let listenerCount = 0;
+            const origAdd = el.addEventListener.bind(el);
+            el.addEventListener = function (type, ...args) {
+                if (type === 'pointerdown') listenerCount++;
+                return origAdd(type, ...args);
+            };
+
+            const cleanup2 = attachRipple(el);
+            expect(listenerCount).toBe(1);
+            cleanup2();
+        });
+
+        test('initRipple called twice should clean up previous attachment', () => {
+            class Base {
+                disconnectedCallback() { }
+            }
+            const Mixed = RippleMixin(Base);
+            const instance = new Mixed();
+            const el = mockElement();
+
+            let addCount = 0;
+            let removeCount = 0;
+            const origAdd = el.addEventListener.bind(el);
+            const origRemove = el.removeEventListener.bind(el);
+            el.addEventListener = function (type, ...args) {
+                if (type === 'pointerdown') addCount++;
+                return origAdd(type, ...args);
+            };
+            el.removeEventListener = function (type, ...args) {
+                if (type === 'pointerdown') removeCount++;
+                return origRemove(type, ...args);
+            };
+
+            instance.initRipple(el);
+            instance.initRipple(el); // should clean up the first
+
+            // First was cleaned up, second was added
+            // The WeakSet guard means only 1 listener add + 1 remove (from cleanup)
+            // then re-add after cleanup
+            expect(removeCount).toBeGreaterThanOrEqual(1); // previous was cleaned up
+
+            instance.disconnectedCallback();
+        });
+    });
 });

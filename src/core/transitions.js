@@ -51,9 +51,11 @@ export async function transitionNamed(updateCallback, { name = 'page' } = {}) {
         `;
         document.head.appendChild(style);
 
-        await transition(updateCallback);
-
-        style.remove();
+        try {
+            await transition(updateCallback);
+        } finally {
+            style.remove();
+        }
     } else {
         await updateCallback();
     }

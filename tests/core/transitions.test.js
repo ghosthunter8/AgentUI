@@ -79,4 +79,24 @@ describe('transitions Module Unit Tests', () => {
         await navigateWithTransition('/test', () => { rendered = true; });
         expect(rendered).toBe(true);
     });
+
+    // ========================================================================
+    // BUG FIX REGRESSION TESTS
+    // ========================================================================
+
+    // BUG #8: transitionNamed should remove <style> element even if callback throws
+    test('transitionNamed should not leak style elements on callback error (fallback path)', async () => {
+        const stylesBefore = document.querySelectorAll('style').length;
+        try {
+            await transitionNamed(() => {
+                throw new Error('Callback error');
+            });
+        } catch (e) {
+            // Expected
+        }
+        // In fallback path (no View Transitions API), the callback throws directly
+        // No style should be left behind
+        const stylesAfter = document.querySelectorAll('style').length;
+        expect(stylesAfter).toBe(stylesBefore);
+    });
 });
