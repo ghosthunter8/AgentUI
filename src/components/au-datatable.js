@@ -411,18 +411,18 @@ export class AuDataTable extends AuElement {
 
     _renderFooterContent(page, totalPages, totalRows) {
         const selectedCount = this._selectedRows.size;
-        const rowInfo = `${totalRows} row${totalRows !== 1 ? 's' : ''}${selectedCount > 0 ? ` · ${selectedCount} selected` : ''}`;
+        const selectionBadge = selectedCount > 0 ? `<span class="au-datatable-selected-count">${selectedCount} selected</span>` : '';
 
         if (totalPages <= 1) {
             return `
-                <div class="au-datatable-footer-info">${rowInfo}</div>
+                <span class="au-datatable-footer-info">${totalRows} row${totalRows !== 1 ? 's' : ''}</span>
+                ${selectionBadge}
             `;
         }
 
         return `
-            <div class="au-datatable-footer-info">
-                Showing ${(page - 1) * this.pageSize + 1}–${Math.min(page * this.pageSize, totalRows)} of ${rowInfo}
-            </div>
+            <span class="au-datatable-footer-info">${(page - 1) * this.pageSize + 1}–${Math.min(page * this.pageSize, totalRows)} of ${totalRows}</span>
+            ${selectionBadge}
             <div class="au-datatable-pagination-controls">
                 <button class="au-datatable-pagination-btn" data-page="prev" ${page <= 1 ? 'disabled' : ''}>
                     ←

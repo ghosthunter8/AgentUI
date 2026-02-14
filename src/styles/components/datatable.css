@@ -133,27 +133,44 @@ au-datatable {
 .au-datatable-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 8px 16px;
     border-top: 1px solid var(--md-sys-color-outline-variant);
-    background: var(--md-sys-color-surface-container-low);
 }
 
 .au-datatable-footer-info {
     font-size: var(--md-sys-typescale-body-small-size);
     color: var(--md-sys-color-on-surface-variant);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.au-datatable-selected-count {
+    font-size: var(--md-sys-typescale-label-small-size);
+    color: var(--md-sys-color-on-primary-container);
+    background: var(--md-sys-color-primary-container);
+    padding: 2px 8px;
+    border-radius: var(--md-sys-shape-corner-full, 100px);
+    white-space: nowrap;
 }
 
 .au-datatable-pagination-controls {
     display: flex;
-    gap: 4px;
+    align-items: center;
+    gap: 2px;
 }
 
 .au-datatable-pagination-btn {
-    padding: 8px 12px;
-    border: 1px solid var(--md-sys-color-outline);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: none;
     border-radius: var(--md-sys-shape-corner-small);
-    background: var(--md-sys-color-surface);
+    background: transparent;
     color: var(--md-sys-color-on-surface);
     cursor: pointer;
     font-size: var(--md-sys-typescale-body-small-size);
@@ -161,16 +178,15 @@ au-datatable {
 }
 
 .au-datatable-pagination-btn:hover:not(:disabled) {
-    background: var(--md-sys-color-surface-container);
+    background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
 }
 
 .au-datatable-pagination-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.38;
     cursor: not-allowed;
 }
 
 .au-datatable-pagination-btn.au-datatable-pagination-btn-active {
     background: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
-    border-color: var(--md-sys-color-primary);
 }

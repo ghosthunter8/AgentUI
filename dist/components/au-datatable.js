@@ -69,12 +69,12 @@ import{h as U}from"./chunk-hwrk9hgf.js";import{n as W,o as O}from"./chunk-0f7ph7
             <div class="au-datatable-footer">
                 ${this._renderFooterContent(z,J,G)}
             </div>
-        `}_renderFooterContent(z,J,G){let K=this._selectedRows.size,L=`${G} row${G!==1?"s":""}${K>0?` · ${K} selected`:""}`;if(J<=1)return`
-                <div class="au-datatable-footer-info">${L}</div>
+        `}_renderFooterContent(z,J,G){let K=this._selectedRows.size,L=K>0?`<span class="au-datatable-selected-count">${K} selected</span>`:"";if(J<=1)return`
+                <span class="au-datatable-footer-info">${G} row${G!==1?"s":""}</span>
+                ${L}
             `;return`
-            <div class="au-datatable-footer-info">
-                Showing ${(z-1)*this.pageSize+1}–${Math.min(z*this.pageSize,G)} of ${L}
-            </div>
+            <span class="au-datatable-footer-info">${(z-1)*this.pageSize+1}–${Math.min(z*this.pageSize,G)} of ${G}</span>
+            ${L}
             <div class="au-datatable-pagination-controls">
                 <button class="au-datatable-pagination-btn" data-page="prev" ${z<=1?"disabled":""}>
                     ←
