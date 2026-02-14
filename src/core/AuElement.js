@@ -106,6 +106,15 @@ export class AuElement extends HTMLElement {
     /** @type {Set} Track intervals for cleanup */
     _intervals = new Set();
 
+    /** @type {boolean} Whether component has completed first render */
+    isReady = false;
+
+    /** @private Resolver for ready promise */
+    _readyResolve = null;
+
+    /** @type {Promise<this>} Resolves after first connectedCallback render */
+    ready = new Promise(resolve => { this._readyResolve = resolve; });
+
     constructor() {
         super();
         this._initAgentLogger();
@@ -190,6 +199,19 @@ export class AuElement extends HTMLElement {
 
         // 2026 Agent Optimization: Auto-infer semantic action attributes
         this._inferSemanticAttributes();
+
+        // 2026: Per-component readiness — fires once after first render
+        if (!this.isReady) {
+            this.isReady = true;
+            this._readyResolve(this);
+            // Defensive: dispatchEvent may throw in test environments (linkedom)
+            // .ready promise and .isReady flag work regardless of event dispatch
+            try {
+                this.dispatchEvent(new CustomEvent('au:ready', {
+                    bubbles: true, composed: true
+                }));
+            } catch (_) { /* linkedom readonly property bug */ }
+        }
     }
 
     /**

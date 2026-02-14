@@ -1,4 +1,4 @@
-import{p as D,q as F}from"./chunk-aeetm00j.js";class G extends D{static baseClass="au-progress";static cssFile="progress";static observedAttributes=["value","max","variant","indeterminate"];#h=null;render(){if(this.querySelector(".au-progress__progress")){this.#h=this.querySelector(".au-progress__primary-bar");return}this.setAttribute("role","progressbar"),this.innerHTML=`<div class="au-progress__progress${this.hasAttribute("indeterminate")?" au-progress__indeterminate":""}">
+import{p as D,q as F}from"./chunk-gkgym1ts.js";class G extends D{static baseClass="au-progress";static cssFile="progress";static observedAttributes=["value","max","variant","indeterminate"];#h=null;render(){if(this.querySelector(".au-progress__progress")){this.#h=this.querySelector(".au-progress__primary-bar");return}this.setAttribute("role","progressbar"),this.innerHTML=`<div class="au-progress__progress${this.hasAttribute("indeterminate")?" au-progress__indeterminate":""}">
     <div class="au-progress__bar au-progress__primary-bar">
         <div class="au-progress__bar-inner"></div>
     </div>

@@ -27,6 +27,11 @@ export declare class AuElement extends HTMLElement {
     /** Returns machine-readable component metadata for AI agent discovery */
     static describe(): ComponentDescription;
 
+    /** Promise that resolves to `this` after the first render in connectedCallback */
+    readonly ready: Promise<this>;
+    /** Boolean flag: true after first connectedCallback render */
+    readonly isReady: boolean;
+
     connectedCallback(): void;
     disconnectedCallback(): void;
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void;
@@ -44,6 +49,12 @@ export declare class AuElement extends HTMLElement {
 }
 
 export declare function define(tagName: string, ComponentClass: typeof AuElement): void;
+
+/**
+ * Returns a Promise that resolves when all AgentUI components are registered.
+ * If already ready, resolves immediately (fast path).
+ */
+export declare function whenReady(): Promise<void>;
 
 // ============================================
 // EVENT BUS (LightBus)

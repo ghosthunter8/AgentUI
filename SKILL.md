@@ -211,6 +211,43 @@ const current = Theme.get(); // 'dark' | 'light'
 
 ---
 
+## ⏳ Component Readiness
+
+Two-level readiness system for safe async component initialization.
+
+### Per-Component (AuElement)
+Every component has `.ready`, `.isReady`, and emits `au:ready`:
+
+```javascript
+const el = document.createElement('au-layout');
+document.body.appendChild(el);
+
+// Promise — resolves to element after first render
+await el.ready; // → el
+
+// Sync flag
+el.isReady; // true
+
+// Event (bubbles to document)
+el.addEventListener('au:ready', () => { /* rendered */ });
+```
+
+### Framework-Level
+Wait for ALL components to be registered:
+
+```javascript
+import { whenReady } from 'agentui-wc';
+await whenReady();
+// All 50+ components are now defined in customElements
+```
+
+IIFE usage:
+```javascript
+await AgentUI.whenReady();
+```
+
+---
+
 ## 🗄️ State Management (`createStore`)
 
 > **Built-in reactive store.** Proxy-based, zero dependencies, optional localStorage persistence.

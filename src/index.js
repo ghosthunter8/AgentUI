@@ -13,6 +13,29 @@ export { bus, UIEvents, showToast } from './core/bus.js';
 export { Theme } from './core/theme.js';
 export { createStore } from './core/store.js';
 
+/**
+ * Returns a Promise that resolves when all AgentUI components are registered.
+ * If already ready, resolves immediately (fast path).
+ * 
+ * @returns {Promise<void>}
+ * @example
+ * import { whenReady } from 'agentui-wc';
+ * await whenReady();
+ * document.querySelector('au-layout').doSomething();
+ */
+export function whenReady() {
+    if (typeof window !== 'undefined' && window.AgentUI?.ready) {
+        return Promise.resolve();
+    }
+    return new Promise(resolve => {
+        if (typeof document !== 'undefined') {
+            document.addEventListener('au-ready', () => resolve(), { once: true });
+        } else {
+            resolve(); // Node.js/test environment — no DOM, resolve immediately
+        }
+    });
+}
+
 export { Router } from './core/router.js';
 export { http, HttpError } from './core/http.js';
 export { createRipple, attachRipple, RippleMixin } from './core/ripple.js';
@@ -250,6 +273,8 @@ if (typeof window !== 'undefined') {
         createStore,
         UIEvents,
         showToast,
+        // Readiness
+        whenReady,
 
         // Router
         Router,
