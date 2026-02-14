@@ -1,7 +1,8 @@
 /**
  * @fileoverview Comprehensive Unit Tests for au-progress Component
- * Tests: registration, render, bar element, value/max, ARIA (progressbar),
- *        percent calculation, variant classes, update()
+ * Tests: registration, render, Material Web DOM structure,
+ *        value/max, ARIA (progressbar), percent calculation,
+ *        variant classes, indeterminate mode, update()
  */
 
 import { describe, test, expect, beforeAll, beforeEach } from 'bun:test';
@@ -31,28 +32,64 @@ describe('au-progress Unit Tests', () => {
         expect(AuProgress.baseClass).toBe('au-progress');
     });
 
-    test('should observe value, max, variant', () => {
+    test('should observe value, max, variant, indeterminate', () => {
         const attrs = AuProgress.observedAttributes;
         expect(attrs).toContain('value');
         expect(attrs).toContain('max');
         expect(attrs).toContain('variant');
+        expect(attrs).toContain('indeterminate');
     });
 
     // ========================================
-    // RENDER — Bar Element
+    // RENDER — Material Web DOM Structure
     // ========================================
 
-    test('should create bar element', () => {
+    test('should create progress container', () => {
         const el = document.createElement('au-progress');
         body.appendChild(el);
-        expect(el.querySelector('.au-progress__bar')).not.toBeNull();
+        expect(el.querySelector('.au-progress__progress')).not.toBeNull();
+    });
+
+    test('should create primary bar', () => {
+        const el = document.createElement('au-progress');
+        body.appendChild(el);
+        expect(el.querySelector('.au-progress__primary-bar')).not.toBeNull();
+    });
+
+    test('should create secondary bar', () => {
+        const el = document.createElement('au-progress');
+        body.appendChild(el);
+        expect(el.querySelector('.au-progress__secondary-bar')).not.toBeNull();
+    });
+
+    test('should create bar-inner elements', () => {
+        const el = document.createElement('au-progress');
+        body.appendChild(el);
+        expect(el.querySelectorAll('.au-progress__bar-inner').length).toBe(2);
+    });
+
+    test('primary bar should contain bar-inner', () => {
+        const el = document.createElement('au-progress');
+        body.appendChild(el);
+        const bar = el.querySelector('.au-progress__primary-bar');
+        expect(bar.querySelector('.au-progress__bar-inner')).not.toBeNull();
+    });
+
+    test('secondary bar should contain bar-inner', () => {
+        const el = document.createElement('au-progress');
+        body.appendChild(el);
+        const bar = el.querySelector('.au-progress__secondary-bar');
+        expect(bar.querySelector('.au-progress__bar-inner')).not.toBeNull();
     });
 
     test('render should be idempotent', () => {
         const el = document.createElement('au-progress');
         body.appendChild(el);
         el.render();
-        expect(el.querySelectorAll('.au-progress__bar').length).toBe(1);
+        el.render();
+        expect(el.querySelectorAll('.au-progress__progress').length).toBe(1);
+        expect(el.querySelectorAll('.au-progress__primary-bar').length).toBe(1);
+        expect(el.querySelectorAll('.au-progress__secondary-bar').length).toBe(1);
     });
 
     // ========================================
@@ -92,35 +129,35 @@ describe('au-progress Unit Tests', () => {
     });
 
     // ========================================
-    // BAR WIDTH (percent calculation)
+    // BAR WIDTH (percent calculation via primary bar)
     // ========================================
 
-    test('should set bar width to 0% when value is 0', () => {
+    test('should set primary bar width to 0% when value is 0', () => {
         const el = document.createElement('au-progress');
         el.setAttribute('value', '0');
         body.appendChild(el);
-        expect(el.querySelector('.au-progress__bar').style.width).toBe('0%');
+        expect(el.querySelector('.au-progress__primary-bar').style.width).toBe('0%');
     });
 
-    test('should set bar width to 50% when value is 50', () => {
+    test('should set primary bar width to 50% when value is 50', () => {
         const el = document.createElement('au-progress');
         el.setAttribute('value', '50');
         body.appendChild(el);
-        expect(el.querySelector('.au-progress__bar').style.width).toBe('50%');
+        expect(el.querySelector('.au-progress__primary-bar').style.width).toBe('50%');
     });
 
-    test('should set bar width to 100% when value equals max', () => {
+    test('should set primary bar width to 100% when value equals max', () => {
         const el = document.createElement('au-progress');
         el.setAttribute('value', '100');
         body.appendChild(el);
-        expect(el.querySelector('.au-progress__bar').style.width).toBe('100%');
+        expect(el.querySelector('.au-progress__primary-bar').style.width).toBe('100%');
     });
 
-    test('should cap bar width at 100%', () => {
+    test('should cap primary bar width at 100%', () => {
         const el = document.createElement('au-progress');
         el.setAttribute('value', '150');
         body.appendChild(el);
-        expect(el.querySelector('.au-progress__bar').style.width).toBe('100%');
+        expect(el.querySelector('.au-progress__primary-bar').style.width).toBe('100%');
     });
 
     test('should calculate percent correctly with custom max', () => {
@@ -128,7 +165,7 @@ describe('au-progress Unit Tests', () => {
         el.setAttribute('value', '25');
         el.setAttribute('max', '50');
         body.appendChild(el);
-        expect(el.querySelector('.au-progress__bar').style.width).toBe('50%');
+        expect(el.querySelector('.au-progress__primary-bar').style.width).toBe('50%');
     });
 
     // ========================================
@@ -155,18 +192,37 @@ describe('au-progress Unit Tests', () => {
     });
 
     // ========================================
+    // INDETERMINATE MODE
+    // ========================================
+
+    test('should add indeterminate class when attribute is set', () => {
+        const el = document.createElement('au-progress');
+        el.setAttribute('indeterminate', '');
+        body.appendChild(el);
+        const progress = el.querySelector('.au-progress__progress');
+        expect(progress.classList.contains('au-progress__indeterminate')).toBe(true);
+    });
+
+    test('should not add indeterminate class by default', () => {
+        const el = document.createElement('au-progress');
+        body.appendChild(el);
+        const progress = el.querySelector('.au-progress__progress');
+        expect(progress.classList.contains('au-progress__indeterminate')).toBe(false);
+    });
+
+    // ========================================
     // UPDATE
     // ========================================
 
-    test('update value should change bar width', () => {
+    test('update value should change primary bar width', () => {
         const el = document.createElement('au-progress');
         el.setAttribute('value', '20');
         body.appendChild(el);
-        expect(el.querySelector('.au-progress__bar').style.width).toBe('20%');
+        expect(el.querySelector('.au-progress__primary-bar').style.width).toBe('20%');
 
         el.setAttribute('value', '60');
         el.update('value', '60', '20');
-        expect(el.querySelector('.au-progress__bar').style.width).toBe('60%');
+        expect(el.querySelector('.au-progress__primary-bar').style.width).toBe('60%');
     });
 
     test('update value should change aria-valuenow', () => {
@@ -188,5 +244,20 @@ describe('au-progress Unit Tests', () => {
         el.update('variant', 'secondary', 'primary');
         expect(el.classList.contains('au-progress--secondary')).toBe(true);
         expect(el.classList.contains('au-progress--primary')).toBe(false);
+    });
+
+    test('update indeterminate should toggle class', () => {
+        const el = document.createElement('au-progress');
+        body.appendChild(el);
+        const progress = el.querySelector('.au-progress__progress');
+        expect(progress.classList.contains('au-progress__indeterminate')).toBe(false);
+
+        el.setAttribute('indeterminate', '');
+        el.update('indeterminate', '', null);
+        expect(progress.classList.contains('au-progress__indeterminate')).toBe(true);
+
+        el.removeAttribute('indeterminate');
+        el.update('indeterminate', null, '');
+        expect(progress.classList.contains('au-progress__indeterminate')).toBe(false);
     });
 });

@@ -1215,12 +1215,17 @@ export const catalog = {
                 ],
                 "default": "primary",
                 "description": "Color variant using MD3 system colors"
+            },
+            "indeterminate": {
+                "type": "boolean",
+                "default": false,
+                "description": "When present, shows infinite animation (Material Web two-bar style)"
             }
         },
         "events": [],
         "examples": [
             "<au-progress value=\"50\" max=\"100\"></au-progress>",
-            "<au-progress></au-progress> <!-- indeterminate -->"
+            "<au-progress indeterminate></au-progress>"
         ],
         "tips": [
             "Omit value for indeterminate animation",

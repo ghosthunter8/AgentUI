@@ -1,5 +1,6 @@
-import"./chunk-evs9rqs3.js";import"./chunk-jn8zd153.js";import"./chunk-3hbqp6np.js";import"./chunk-ce0w0142.js";import"./chunk-wvr0ptzf.js";import"./chunk-s1kj67sf.js";import{i as a,j as e}from"./chunk-afwem87e.js";class n extends a{static baseClass="au-spinner";static observedAttributes=["size","color"];render(){if(this.querySelector(".au-spinner__layer"))return;if(!this.hasAttribute("role"))this.setAttribute("role","progressbar");if(!this.hasAttribute("aria-label"))this.setAttribute("aria-label","Loading");this.innerHTML=`<div class="au-spinner__layer">
-    <div class="au-spinner__clip-left"><div class="au-spinner__circle"></div></div>
-    <div class="au-spinner__gap"><div class="au-spinner__circle"></div></div>
-    <div class="au-spinner__clip-right"><div class="au-spinner__circle"></div></div>
-</div>`,this.#i()}update(r,t,s){this.#i()}#i(){let r=this.attr("size","md"),t=this.attr("color","primary"),s=["au-spinner",`au-spinner--${r}`,`au-spinner--${t}`];s.forEach((i)=>this.classList.add(i)),Array.from(this.classList).forEach((i)=>{if(i.startsWith("au-spinner--")&&!s.includes(i))this.classList.remove(i)})}}e("au-spinner",n);
+import"./chunk-evs9rqs3.js";import"./chunk-jn8zd153.js";import"./chunk-3hbqp6np.js";import"./chunk-ce0w0142.js";import"./chunk-wvr0ptzf.js";import"./chunk-s1kj67sf.js";import{i as e,j as a}from"./chunk-afwem87e.js";class n extends e{static baseClass="au-spinner";static observedAttributes=["size","color"];render(){if(this.querySelector(".au-spinner__spinner"))return;if(!this.hasAttribute("role"))this.setAttribute("role","progressbar");if(!this.hasAttribute("aria-label"))this.setAttribute("aria-label","Loading");this.innerHTML=`<div class="au-spinner__progress">
+    <div class="au-spinner__spinner">
+        <div class="au-spinner__left"><div class="au-spinner__circle"></div></div>
+        <div class="au-spinner__right"><div class="au-spinner__circle"></div></div>
+    </div>
+</div>`,this.#i()}update(r,t,s){this.#i()}#i(){let r=this.attr("size","md"),t=this.attr("color","primary"),s=["au-spinner",`au-spinner--${r}`,`au-spinner--${t}`];s.forEach((i)=>this.classList.add(i)),Array.from(this.classList).forEach((i)=>{if(i.startsWith("au-spinner--")&&!s.includes(i))this.classList.remove(i)})}}a("au-spinner",n);

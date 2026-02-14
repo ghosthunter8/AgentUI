@@ -1,7 +1,7 @@
 /**
  * @fileoverview Comprehensive Unit Tests for au-spinner Component
- * Tests: registration, render, MD3 DOM structure, size/color classes,
- *        render idempotency, update(), GPU-only animations
+ * Tests: registration, render, Material Web DOM structure,
+ *        size/color classes, render idempotency, update(), accessibility
  */
 
 import { describe, test, expect, beforeAll, beforeEach } from 'bun:test';
@@ -37,48 +37,51 @@ describe('au-spinner Unit Tests', () => {
     });
 
     // ========================================
-    // RENDER — MD3 DOM STRUCTURE
+    // RENDER — Material Web DOM STRUCTURE
     // ========================================
 
-    test('should create MD3 spinner layer', () => {
+    test('should create progress container', () => {
         const el = document.createElement('au-spinner');
         body.appendChild(el);
-        expect(el.querySelector('.au-spinner__layer')).not.toBeNull();
+        expect(el.querySelector('.au-spinner__progress')).not.toBeNull();
     });
 
-    test('should create left circle clipper', () => {
+    test('should create spinner layer', () => {
         const el = document.createElement('au-spinner');
         body.appendChild(el);
-        expect(el.querySelector('.au-spinner__clip-left')).not.toBeNull();
+        expect(el.querySelector('.au-spinner__spinner')).not.toBeNull();
     });
 
-    test('should create right circle clipper', () => {
+    test('should create left clipper', () => {
         const el = document.createElement('au-spinner');
         body.appendChild(el);
-        expect(el.querySelector('.au-spinner__clip-right')).not.toBeNull();
+        expect(el.querySelector('.au-spinner__left')).not.toBeNull();
     });
 
-    test('should create gap patch between half-circles', () => {
+    test('should create right clipper', () => {
         const el = document.createElement('au-spinner');
         body.appendChild(el);
-        expect(el.querySelector('.au-spinner__gap')).not.toBeNull();
+        expect(el.querySelector('.au-spinner__right')).not.toBeNull();
     });
 
-    test('each clipper should contain a circle element', () => {
+    test('should have exactly two circle elements', () => {
         const el = document.createElement('au-spinner');
         body.appendChild(el);
-        const leftCircle = el.querySelector('.au-spinner__clip-left .au-spinner__circle');
-        const rightCircle = el.querySelector('.au-spinner__clip-right .au-spinner__circle');
-        const gapCircle = el.querySelector('.au-spinner__gap .au-spinner__circle');
-        expect(leftCircle).not.toBeNull();
-        expect(rightCircle).not.toBeNull();
-        expect(gapCircle).not.toBeNull();
+        expect(el.querySelectorAll('.au-spinner__circle').length).toBe(2);
     });
 
-    test('should have exactly 3 circle elements', () => {
+    test('left clipper should contain a circle', () => {
         const el = document.createElement('au-spinner');
         body.appendChild(el);
-        expect(el.querySelectorAll('.au-spinner__circle').length).toBe(3);
+        const left = el.querySelector('.au-spinner__left');
+        expect(left.querySelector('.au-spinner__circle')).not.toBeNull();
+    });
+
+    test('right clipper should contain a circle', () => {
+        const el = document.createElement('au-spinner');
+        body.appendChild(el);
+        const right = el.querySelector('.au-spinner__right');
+        expect(right.querySelector('.au-spinner__circle')).not.toBeNull();
     });
 
     test('render should be idempotent', () => {
@@ -86,8 +89,8 @@ describe('au-spinner Unit Tests', () => {
         body.appendChild(el);
         el.render();
         el.render();
-        // Only one layer regardless of how many times render is called
-        expect(el.querySelectorAll('.au-spinner__layer').length).toBe(1);
+        expect(el.querySelectorAll('.au-spinner__spinner').length).toBe(1);
+        expect(el.querySelectorAll('.au-spinner__circle').length).toBe(2);
     });
 
     // ========================================

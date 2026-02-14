@@ -1325,87 +1325,67 @@ au-alert au-icon:first-child {
 
 /* ============================================================================
    SPINNER - MD3 Circular Progress Indicator
-   GPU-only animations: all keyframes use transform: rotate() exclusively.
-   https://m3.material.io/components/progress-indicators
+   Exact port of Material Web md-circular-progress (indeterminate).
+   Three composed animations, two bordered-div clipping. GPU-only.
+   https://github.com/material-components/material-web
    ============================================================================ */
 
 .au-spinner {
-    display: inline-block;
+    display: inline-flex;
+    vertical-align: middle;
     position: relative;
+    align-items: center;
+    justify-content: center;
+    contain: strict;
+    content-visibility: auto;
 }
 
-/* Container layer — continuous 360° rotation */
-.au-spinner__layer {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    animation: au-spinner-rotate 1568ms linear infinite;
-}
-
-/* Each clipper hides half the circle via overflow:hidden */
-.au-spinner__clip-left,
-.au-spinner__clip-right {
+.au-spinner__progress,
+.au-spinner__spinner,
+.au-spinner__left,
+.au-spinner__right,
+.au-spinner__circle {
     position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
+    inset: 0;
+}
+
+.au-spinner__progress {
+    margin: 4px;
+    animation: au-spinner-linear-rotate 1568ms linear infinite;
+}
+
+.au-spinner__spinner {
+    animation: au-spinner-rotate-arc 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.au-spinner__left {
     overflow: hidden;
+    inset: 0 50% 0 0;
 }
 
-.au-spinner__clip-left {
-    left: 0;
+.au-spinner__right {
+    overflow: hidden;
+    inset: 0 0 0 50%;
 }
 
-.au-spinner__clip-right {
-    right: 0;
-}
-
-/* The circle element — a full border-radius ring, clipped to half */
 .au-spinner__circle {
     box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    width: 200%;
-    height: 100%;
-    border-style: solid;
-    border-color: currentColor currentColor transparent currentColor;
     border-radius: 50%;
+    border-style: solid;
+    border-color: currentColor currentColor transparent transparent;
+    animation: au-spinner-expand-arc 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both;
 }
 
-/* Left circle: anchored on the right edge, rotates clockwise */
-.au-spinner__clip-left .au-spinner__circle {
-    left: 0;
-    border-right-color: transparent;
-    animation: au-spinner-left 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.au-spinner__left .au-spinner__circle {
+    rotate: 135deg;
+    inset: 0 -100% 0 0;
 }
 
-/* Right circle: anchored on the left edge, rotates to complete the arc */
-.au-spinner__clip-right .au-spinner__circle {
-    right: 0;
-    left: auto;
-    border-left-color: transparent;
-    animation: au-spinner-right 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.au-spinner__right .au-spinner__circle {
+    rotate: 100deg;
+    inset: 0 0 0 -100%;
+    animation-delay: -666.5ms;
 }
-
-/* Gap patch — covers the seam between left/right halves */
-.au-spinner__gap {
-    position: absolute;
-    top: 0;
-    left: 45%;
-    width: 10%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.au-spinner__gap .au-spinner__circle {
-    left: -450%;
-    width: 1000%;
-    border-color: currentColor;
-}
-
-/* ============================================================================
-   SIZES — dimensions + border-width
-   ============================================================================ */
 
 .au-spinner--xs {
     width: 16px;
@@ -1434,7 +1414,6 @@ au-alert au-icon:first-child {
     border-width: 3px;
 }
 
-/* MD3 standard: 48dp diameter, 4dp track */
 .au-spinner--lg {
     width: 48px;
     height: 48px;
@@ -1453,10 +1432,6 @@ au-alert au-icon:first-child {
     border-width: 4px;
 }
 
-/* ============================================================================
-   COLORS
-   ============================================================================ */
-
 .au-spinner--primary {
     color: var(--md-sys-color-primary);
 }
@@ -1474,18 +1449,57 @@ au-alert au-icon:first-child {
 }
 
 /* ============================================================================
-   PROGRESS - MD3 Expressive Linear Progress Indicator (8dp)
+   PROGRESS - MD3 Linear Progress Indicator
+   Port of Material Web md-linear-progress.
+   https://github.com/material-components/material-web
    ============================================================================ */
 
 .au-progress {
     position: relative;
+    display: flex;
     width: 100%;
     height: 8px;
-    /* MD3 Expressive: 8dp track height for better visibility */
-    background: var(--md-sys-color-surface-container-highest);
     border-radius: 4px;
-    /* MD3: trackCornerRadius = 4dp for rounded track */
     overflow: hidden;
+    contain: strict;
+    content-visibility: auto;
+}
+
+.au-progress__progress {
+    direction: ltr;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.au-progress__progress::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-surface-container-highest);
+}
+
+.au-progress__bar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-origin: left center;
+    transition: width 250ms cubic-bezier(0.4, 0, 0.6, 1);
+    animation: none;
+}
+
+.au-progress__bar-inner {
+    position: absolute;
+    inset: 0;
+    animation: none;
+    background: var(--md-sys-color-primary);
+}
+
+.au-progress__secondary-bar {
+    display: none;
 }
 
 .au-progress--sm {
@@ -1503,40 +1517,50 @@ au-alert au-icon:first-child {
     border-radius: 6px;
 }
 
-.au-progress__bar {
-    display: block;
-    height: 100%;
+.au-progress--primary .au-progress__bar-inner {
     background: var(--md-sys-color-primary);
-    border-radius: inherit;
-    transition: width var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
 }
 
-.au-progress--success .au-progress__bar {
-    background: #1B5E20;
+.au-progress--secondary .au-progress__bar-inner {
+    background: var(--md-sys-color-secondary);
 }
 
-.au-progress--warning .au-progress__bar {
-    background: #E65100;
+.au-progress--success .au-progress__bar-inner {
+    background: var(--md-sys-color-success, #1B5E20);
 }
 
-.au-progress--error .au-progress__bar {
+.au-progress--warning .au-progress__bar-inner {
+    background: var(--md-sys-color-warning, #E65100);
+}
+
+.au-progress--error .au-progress__bar-inner {
     background: var(--md-sys-color-error);
 }
 
-/* Indeterminate animation */
-.au-progress[indeterminate] .au-progress__bar {
-    width: 50% !important;
-    animation: au-progress-indeterminate 1.5s infinite ease-in-out;
+/* Indeterminate — Material Web two-bar animation */
+.au-progress__indeterminate .au-progress__bar {
+    transition: none;
 }
 
-@keyframes au-progress-indeterminate {
-    0% {
-        transform: translateX(-100%);
-    }
+.au-progress__indeterminate .au-progress__primary-bar {
+    inset-inline-start: -145.167%;
+    width: 100%;
+    animation: au-progress-primary-translate 2s linear infinite;
+}
 
-    100% {
-        transform: translateX(300%);
-    }
+.au-progress__indeterminate .au-progress__primary-bar>.au-progress__bar-inner {
+    animation: au-progress-primary-scale 2s linear infinite;
+}
+
+.au-progress__indeterminate .au-progress__secondary-bar {
+    inset-inline-start: -54.8889%;
+    display: block;
+    width: 100%;
+    animation: au-progress-secondary-translate 2s linear infinite;
+}
+
+.au-progress__indeterminate .au-progress__secondary-bar>.au-progress__bar-inner {
+    animation: au-progress-secondary-scale 2s linear infinite;
 }
 
 .au-progress__label {
@@ -2139,42 +2163,141 @@ au-tab-panel:not([active]),
     }
 }
 
-/* MD3 Spinner — GPU-only keyframes (transform: rotate only) */
-@keyframes au-spinner-rotate {
-    from {
-        transform: rotate(0deg);
+/* MD3 Spinner — 3 composed animations (Material Web port) */
+@keyframes au-spinner-expand-arc {
+    0% {
+        transform: rotate(265deg);
     }
 
+    50% {
+        transform: rotate(130deg);
+    }
+
+    100% {
+        transform: rotate(265deg);
+    }
+}
+
+@keyframes au-spinner-rotate-arc {
+    12.5% {
+        transform: rotate(135deg);
+    }
+
+    25% {
+        transform: rotate(270deg);
+    }
+
+    37.5% {
+        transform: rotate(405deg);
+    }
+
+    50% {
+        transform: rotate(540deg);
+    }
+
+    62.5% {
+        transform: rotate(675deg);
+    }
+
+    75% {
+        transform: rotate(810deg);
+    }
+
+    87.5% {
+        transform: rotate(945deg);
+    }
+
+    100% {
+        transform: rotate(1080deg);
+    }
+}
+
+@keyframes au-spinner-linear-rotate {
     to {
         transform: rotate(360deg);
     }
 }
 
-@keyframes au-spinner-left {
+/* MD3 Linear Progress — 4 composed animations (Material Web port) */
+@keyframes au-progress-primary-translate {
     0% {
-        transform: rotate(130deg);
+        transform: translateX(0px);
     }
 
-    50% {
-        transform: rotate(-5deg);
+    20% {
+        animation-timing-function: cubic-bezier(0.5, 0, 0.701732, 0.495819);
+        transform: translateX(0px);
+    }
+
+    59.15% {
+        animation-timing-function: cubic-bezier(0.302435, 0.381352, 0.55, 0.956352);
+        transform: translateX(83.6714%);
     }
 
     100% {
-        transform: rotate(130deg);
+        transform: translateX(200.611%);
     }
 }
 
-@keyframes au-spinner-right {
+@keyframes au-progress-primary-scale {
     0% {
-        transform: rotate(-130deg);
+        transform: scaleX(0.08);
     }
 
-    50% {
-        transform: rotate(5deg);
+    36.65% {
+        animation-timing-function: cubic-bezier(0.334731, 0.12482, 0.785844, 1);
+        transform: scaleX(0.08);
+    }
+
+    69.15% {
+        animation-timing-function: cubic-bezier(0.06, 0.11, 0.6, 1);
+        transform: scaleX(0.661479);
     }
 
     100% {
-        transform: rotate(-130deg);
+        transform: scaleX(0.08);
+    }
+}
+
+@keyframes au-progress-secondary-translate {
+    0% {
+        animation-timing-function: cubic-bezier(0.15, 0, 0.515058, 0.409685);
+        transform: translateX(0px);
+    }
+
+    25% {
+        animation-timing-function: cubic-bezier(0.31033, 0.284058, 0.8, 0.733712);
+        transform: translateX(37.6519%);
+    }
+
+    48.35% {
+        animation-timing-function: cubic-bezier(0.4, 0.627035, 0.6, 0.902026);
+        transform: translateX(84.3862%);
+    }
+
+    100% {
+        transform: translateX(160.278%);
+    }
+}
+
+@keyframes au-progress-secondary-scale {
+    0% {
+        animation-timing-function: cubic-bezier(0.205028, 0.057051, 0.57661, 0.453971);
+        transform: scaleX(0.08);
+    }
+
+    19.15% {
+        animation-timing-function: cubic-bezier(0.152313, 0.196432, 0.648374, 1.00432);
+        transform: scaleX(0.457104);
+    }
+
+    44.15% {
+        animation-timing-function: cubic-bezier(0.257759, -0.003163, 0.211762, 1.38179);
+        transform: scaleX(0.72796);
+    }
+
+    100% {
+        transform: scaleX(0.08);
     }
 }
 

@@ -1,7 +1,8 @@
 /**
  * @fileoverview au-spinner - MD3 Circular Progress Indicator
- * GPU-only animation using two-half-circle clipping technique.
- * All animations use transform: rotate() — 100% GPU composited.
+ * Exact port of Material Web's md-circular-progress (indeterminate mode).
+ * Uses two bordered divs clipped into half circles.
+ * Source: https://github.com/material-components/material-web/blob/main/progress/internal/circular-progress.ts
  */
 
 import { AuElement, define } from '../core/AuElement.js';
@@ -12,21 +13,19 @@ export class AuSpinner extends AuElement {
 
     render() {
         // Idempotent: skip if already rendered
-        if (this.querySelector('.au-spinner__layer')) return;
+        if (this.querySelector('.au-spinner__spinner')) return;
 
         // Accessibility
         if (!this.hasAttribute('role')) this.setAttribute('role', 'progressbar');
         if (!this.hasAttribute('aria-label')) this.setAttribute('aria-label', 'Loading');
 
-        // MD3 two-half-circle structure:
-        // - layer: rotates continuously (container rotation)
-        // - clip-left/clip-right: each clips half the circle, overflow:hidden
-        // - circles inside each clip: rotate to show/hide the arc
-        // - gap: thin patch to cover the seam between halves
-        this.innerHTML = `<div class="au-spinner__layer">
-    <div class="au-spinner__clip-left"><div class="au-spinner__circle"></div></div>
-    <div class="au-spinner__gap"><div class="au-spinner__circle"></div></div>
-    <div class="au-spinner__clip-right"><div class="au-spinner__circle"></div></div>
+        // Exact Material Web structure for indeterminate mode:
+        // .progress > .spinner > (.left > .circle) + (.right > .circle)
+        this.innerHTML = `<div class="au-spinner__progress">
+    <div class="au-spinner__spinner">
+        <div class="au-spinner__left"><div class="au-spinner__circle"></div></div>
+        <div class="au-spinner__right"><div class="au-spinner__circle"></div></div>
+    </div>
 </div>`;
         this.#updateClasses();
     }

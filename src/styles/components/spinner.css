@@ -1,90 +1,101 @@
 /**
  * AgentUI Spinner Component Styles — MD3 Circular Progress Indicator
- * GPU-only animations: all keyframes use transform: rotate() exclusively.
- * Technique: two-half-circle clipping (same as Angular Material / Material Web).
- * https://m3.material.io/components/progress-indicators
+ * Exact port of Material Web's md-circular-progress (indeterminate mode).
+ * Source: https://github.com/material-components/material-web/blob/main/progress/internal/_circular-progress.scss
+ *
+ * Animation is 3 composed animations:
+ * 1. expand-arc: arc expands/contracts between 10° and 270° (on each circle)
+ * 2. rotate-arc: arc rotates in 135° increments (on spinner layer)
+ * 3. linear-rotate: continuous linear 360° rotation (on progress container)
+ *
+ * All animations use only transform/rotate → GPU composited.
+ * This approach has 4.5x the FPS of SVG on Chrome (per Material Web source).
  */
 
 /* ============================================================================
    SPINNER - MD3 Circular Progress Indicator
    ============================================================================ */
 
+/* Constants from Material Web SCSS:
+ * ARCSIZE = 270deg
+ * ARCTIME = 1333ms
+ * ARCSTARTROT = 216deg
+ * cycle-duration = 4 * ARCTIME = 5332ms
+ * linear-rotate-duration = ARCTIME * 360 / (ARCSTARTROT + (360 - ARCSIZE))
+ *                        = 1333 * 360 / 306 ≈ 1568ms
+ */
+
 .au-spinner {
-    display: inline-block;
+    display: inline-flex;
+    vertical-align: middle;
     position: relative;
+    align-items: center;
+    justify-content: center;
+    /* Performance: minimize CPU when spinner is on screen */
+    contain: strict;
+    content-visibility: auto;
 }
 
-/* Container layer — continuous 360° rotation */
-.au-spinner__layer {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    animation: au-spinner-rotate 1568ms linear infinite;
-}
-
-/* Each clipper hides half the circle via overflow:hidden */
-.au-spinner__clip-left,
-.au-spinner__clip-right {
+/* All positioned layers share the same inset */
+.au-spinner__progress,
+.au-spinner__spinner,
+.au-spinner__left,
+.au-spinner__right,
+.au-spinner__circle {
     position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
+    inset: 0;
+}
+
+/* Outer container: animation 3 — continuous linear rotation */
+.au-spinner__progress {
+    /* margin creates "container padding" like Material Web's 4px */
+    margin: 4px;
+    animation: au-spinner-linear-rotate 1568ms linear infinite;
+}
+
+/* Spinner layer: animation 2 — stepped rotation in 135° increments */
+.au-spinner__spinner {
+    animation: au-spinner-rotate-arc 5332ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Left/right clippers: overflow hidden, each shows 50% */
+.au-spinner__left {
     overflow: hidden;
+    inset: 0 50% 0 0;
 }
 
-.au-spinner__clip-left {
-    left: 0;
+.au-spinner__right {
+    overflow: hidden;
+    inset: 0 0 0 50%;
 }
 
-.au-spinner__clip-right {
-    right: 0;
-}
-
-/* The circle element — a full border-radius ring, clipped to half */
+/* Circle: full border-radius, half the border colored (top + right) */
 .au-spinner__circle {
     box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    width: 200%;
-    height: 100%;
-    border-style: solid;
-    border-color: currentColor currentColor transparent currentColor;
     border-radius: 50%;
+    border-style: solid;
+    border-color: currentColor currentColor transparent transparent;
+    /* animation 1 — arc expand/contract */
+    animation: au-spinner-expand-arc 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both;
 }
 
-/* Left circle: anchored on the right edge, rotates clockwise */
-.au-spinner__clip-left .au-spinner__circle {
-    left: 0;
-    border-right-color: transparent;
-    animation: au-spinner-left 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+/* Left circle: rotated 135° and extended to the right */
+.au-spinner__left .au-spinner__circle {
+    rotate: 135deg;
+    inset: 0 -100% 0 0;
 }
 
-/* Right circle: anchored on the left edge, rotates to complete the arc */
-.au-spinner__clip-right .au-spinner__circle {
-    right: 0;
-    left: auto;
-    border-left-color: transparent;
-    animation: au-spinner-right 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-/* Gap patch — covers the seam between left/right halves */
-.au-spinner__gap {
-    position: absolute;
-    top: 0;
-    left: 45%;
-    width: 10%;
-    height: 100%;
-    overflow: hidden;
-}
-
-.au-spinner__gap .au-spinner__circle {
-    left: -450%;
-    width: 1000%;
-    border-color: currentColor;
+/* Right circle: rotated 100°, extended to the left, offset by half-cycle */
+.au-spinner__right .au-spinner__circle {
+    rotate: 100deg;
+    inset: 0 0 0 -100%;
+    animation-delay: -666.5ms;
 }
 
 /* ============================================================================
-   SIZES — dimensions + border-width
+   SIZES — dimensions + border-width (track thickness)
+   Material Web uses active-indicator-width as percentage of size.
+   We use fixed px values for simplicity.
    ============================================================================ */
 
 .au-spinner--xs {
@@ -154,46 +165,67 @@
 }
 
 /* ============================================================================
-   KEYFRAMES — GPU-only (transform: rotate only)
+   KEYFRAMES — all GPU-only (transform/rotate)
    ============================================================================ */
 
-/* Container rotation: continuous 360° */
-@keyframes au-spinner-rotate {
-    from {
-        transform: rotate(0deg);
+/* Animation 1: expand-arc
+   Two divs each represent half of the 270° arc, one offset by 50%.
+   Creates an arc expanding from ~10° to ~270°. */
+@keyframes au-spinner-expand-arc {
+    0% {
+        transform: rotate(265deg);
     }
 
+    50% {
+        transform: rotate(130deg);
+    }
+
+    100% {
+        transform: rotate(265deg);
+    }
+}
+
+/* Animation 2: rotate-arc
+   Arc travels around the circle: 270° arc × 4 cycles = 1080°.
+   Subdivided into 135° increments (270° / 2 divs). */
+@keyframes au-spinner-rotate-arc {
+    12.5% {
+        transform: rotate(135deg);
+    }
+
+    25% {
+        transform: rotate(270deg);
+    }
+
+    37.5% {
+        transform: rotate(405deg);
+    }
+
+    50% {
+        transform: rotate(540deg);
+    }
+
+    62.5% {
+        transform: rotate(675deg);
+    }
+
+    75% {
+        transform: rotate(810deg);
+    }
+
+    87.5% {
+        transform: rotate(945deg);
+    }
+
+    100% {
+        transform: rotate(1080deg);
+    }
+}
+
+/* Animation 3: linear-rotate
+   Continuous linear rotation of the whole spinner. */
+@keyframes au-spinner-linear-rotate {
     to {
         transform: rotate(360deg);
-    }
-}
-
-/* Left half-circle: arc grows from ~10° to ~270° */
-@keyframes au-spinner-left {
-    0% {
-        transform: rotate(130deg);
-    }
-
-    50% {
-        transform: rotate(-5deg);
-    }
-
-    100% {
-        transform: rotate(130deg);
-    }
-}
-
-/* Right half-circle: arc shrinks complementary to left */
-@keyframes au-spinner-right {
-    0% {
-        transform: rotate(-130deg);
-    }
-
-    50% {
-        transform: rotate(5deg);
-    }
-
-    100% {
-        transform: rotate(-130deg);
     }
 }

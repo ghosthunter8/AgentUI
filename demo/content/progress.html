@@ -14,13 +14,21 @@
     </au-tabs>
 
     <div id="progress-overview" class="doc-tab-content">
-        <au-example title="Linear progress bar">
+        <au-example title="Determinate progress">
             <div slot="demo">
                 <au-stack gap="md" style="width: 100%;">
                     <au-progress value="25"></au-progress>
                     <au-progress value="50"></au-progress>
                     <au-progress value="75"></au-progress>
                     <au-progress value="100"></au-progress>
+                </au-stack>
+            </div>
+        </au-example>
+
+        <au-example title="Indeterminate progress">
+            <div slot="demo">
+                <au-stack gap="md" style="width: 100%;">
+                    <au-progress indeterminate></au-progress>
                 </au-stack>
             </div>
         </au-example>
@@ -56,10 +64,10 @@
         <div class="component-section">
             <h3 class="section-title">When NOT to use</h3>
             <au-stack gap="md">
-                <au-alert severity="warning">Don't use for <strong>indeterminate loading</strong> where duration is
-                    unknown — use <code>&lt;au-spinner&gt;</code> instead</au-alert>
                 <au-alert severity="warning">Don't use for <strong>button loading states</strong> — use inline spinner
                     or button disabled state</au-alert>
+                <au-alert severity="info">For unknown duration loading, use <code>indeterminate</code> attribute
+                    or <code>&lt;au-spinner&gt;</code> for compact spaces</au-alert>
             </au-stack>
         </div>
     </div>

@@ -1,5 +1,10 @@
 /**
  * @fileoverview au-progress - MD3 Linear Progress Indicator
+ * Port of Material Web's md-linear-progress.
+ * Source: https://github.com/material-components/material-web/blob/main/progress/internal/linear-progress.ts
+ *
+ * Determinate: single bar with width %.
+ * Indeterminate: two bars (primary + secondary) with Material Web keyframes.
  */
 
 import { AuElement, define } from '../core/AuElement.js';
@@ -7,20 +12,30 @@ import { AuElement, define } from '../core/AuElement.js';
 export class AuProgress extends AuElement {
     static baseClass = 'au-progress';
     static cssFile = 'progress';
-    static observedAttributes = ['value', 'max', 'variant'];
+    static observedAttributes = ['value', 'max', 'variant', 'indeterminate'];
 
-    #bar = null;
+    #primaryBar = null;
 
     render() {
-        // Idempotent: skip if already rendered  
-        if (this.querySelector('.au-progress__bar')) {
-            this.#bar = this.querySelector('.au-progress__bar');
+        // Idempotent: skip if already rendered
+        if (this.querySelector('.au-progress__progress')) {
+            this.#primaryBar = this.querySelector('.au-progress__primary-bar');
             return;
         }
 
-        this.innerHTML = '<span class="au-progress__bar"></span>';
-        this.#bar = this.querySelector('.au-progress__bar');
         this.setAttribute('role', 'progressbar');
+
+        // Material Web structure:
+        // .progress > (.bar.primary-bar > .bar-inner) + (.bar.secondary-bar > .bar-inner)
+        this.innerHTML = `<div class="au-progress__progress${this.hasAttribute('indeterminate') ? ' au-progress__indeterminate' : ''}">
+    <div class="au-progress__bar au-progress__primary-bar">
+        <div class="au-progress__bar-inner"></div>
+    </div>
+    <div class="au-progress__bar au-progress__secondary-bar">
+        <div class="au-progress__bar-inner"></div>
+    </div>
+</div>`;
+        this.#primaryBar = this.querySelector('.au-progress__primary-bar');
         this.#updateProgress();
         this.#updateClasses();
     }
@@ -28,6 +43,16 @@ export class AuProgress extends AuElement {
     update(attr, newValue, oldValue) {
         if (attr === 'value' || attr === 'max') {
             this.#updateProgress();
+        }
+        if (attr === 'indeterminate') {
+            const progress = this.querySelector('.au-progress__progress');
+            if (progress) {
+                if (newValue !== null) {
+                    progress.classList.add('au-progress__indeterminate');
+                } else {
+                    progress.classList.remove('au-progress__indeterminate');
+                }
+            }
         }
         this.#updateClasses();
     }
@@ -37,8 +62,8 @@ export class AuProgress extends AuElement {
         const max = parseFloat(this.attr('max', '100'));
         const percent = Math.min(100, Math.max(0, (value / max) * 100));
 
-        if (this.#bar) {
-            this.#bar.style.width = `${percent}%`;
+        if (this.#primaryBar) {
+            this.#primaryBar.style.width = `${percent}%`;
         }
 
         this.setAttribute('aria-valuenow', value.toString());
