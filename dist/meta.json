@@ -1082,7 +1082,7 @@
       "format": "esm"
     },
     "src/components/au-switch.js": {
-      "bytes": 6024,
+      "bytes": 6669,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1268,7 +1268,7 @@
       "format": "esm"
     },
     "src/components/au-checkbox.js": {
-      "bytes": 8019,
+      "bytes": 8717,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1382,7 +1382,7 @@
       "format": "esm"
     },
     "src/components/au-radio.js": {
-      "bytes": 7742,
+      "bytes": 8419,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1412,7 +1412,7 @@
   },
   "outputs": {
     "./agentui.esm.js": {
-      "bytes": 182847,
+      "bytes": 184381,
       "inputs": {
         "src/core/AuElement.js": {
           "bytesInOutput": 6405
@@ -1511,13 +1511,13 @@
           "bytesInOutput": 4727
         },
         "src/components/au-checkbox.js": {
-          "bytesInOutput": 3677
+          "bytesInOutput": 4178
         },
         "src/components/au-switch.js": {
-          "bytesInOutput": 2821
+          "bytesInOutput": 3378
         },
         "src/components/au-radio.js": {
-          "bytesInOutput": 3464
+          "bytesInOutput": 3940
         },
         "src/components/au-chip.js": {
           "bytesInOutput": 2363

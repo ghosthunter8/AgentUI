@@ -37,7 +37,8 @@ export class AuSwitch extends AuElement {
 
         this.listen(this, 'pointerdown', (e) => {
             if (!this.isDisabled) {
-                createRipple(this, e);
+                const stateLayer = this.querySelector('.au-switch__state-layer');
+                if (stateLayer) createRipple(stateLayer, e, { centered: true });
             }
         });
         this.listen(this, 'click', () => {
@@ -58,7 +59,9 @@ export class AuSwitch extends AuElement {
         const label = this.attr('label', '') || this.textContent;
         this.innerHTML = html`
             <span class="au-switch__track">
-                <span class="au-switch__thumb"></span>
+                <span class="au-switch__state-layer">
+                    <span class="au-switch__thumb"></span>
+                </span>
             </span>
             ${label ? html`<span class="au-switch__label">${label}</span>` : ''}
         `;
@@ -79,6 +82,7 @@ export class AuSwitch extends AuElement {
     /** @private */
     #updateState() {
         const track = this.querySelector('.au-switch__track');
+        const stateLayer = this.querySelector('.au-switch__state-layer');
         const thumb = this.querySelector('.au-switch__thumb');
         const isChecked = this.has('checked');
         const isDisabled = this.has('disabled');
@@ -103,18 +107,28 @@ export class AuSwitch extends AuElement {
             }
         }
 
+        // MD3: 40dp state layer centered on thumb, following thumb position
+        if (stateLayer) {
+            const stateLayerLeft = isChecked ? 20 : -2;  // Center 40dp layer on thumb
+            stateLayer.style.cssText = `
+                width: 40px; height: 40px;
+                border-radius: 50%;
+                position: absolute;
+                top: -4px;
+                left: ${stateLayerLeft}px;
+                display: flex; align-items: center; justify-content: center;
+                overflow: hidden;
+                transition: left var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized);
+            `;
+        }
+
         if (thumb) {
             // MD3: Thumb is 16dp when off, 24dp when on
             const thumbSize = isChecked ? 24 : 16;
-            const thumbTop = isChecked ? 4 : 8;  // Center vertically in track
-            const thumbLeft = isChecked ? 24 : 6;  // Position within track
 
             thumb.style.width = `${thumbSize}px`;
             thumb.style.height = `${thumbSize}px`;
             thumb.style.borderRadius = `${thumbSize / 2}px`;
-            thumb.style.position = 'absolute';
-            thumb.style.top = `${thumbTop}px`;
-            thumb.style.left = `${thumbLeft}px`;
             thumb.style.transition = 'all var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized)';
 
             // MD3 disabled state

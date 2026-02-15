@@ -46,7 +46,8 @@ export class AuCheckbox extends AuElement {
 
         this.listen(this, 'pointerdown', (e) => {
             if (!this.isDisabled) {
-                createRipple(this, e);
+                const stateLayer = this.querySelector('.au-checkbox__state-layer');
+                if (stateLayer) createRipple(stateLayer, e, { centered: true });
             }
         });
         this.listen(this, 'click', () => {
@@ -67,11 +68,13 @@ export class AuCheckbox extends AuElement {
         const label = this.attr('label', '') || this.textContent;
         // SVG with both checkmark and indeterminate line paths
         this.innerHTML = html`
-            <span class="au-checkbox__box">
-                <svg class="au-checkbox__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <path class="au-checkbox__check" d="M4 12l6 6L20 6"/>
-                    <line class="au-checkbox__indeterminate" x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
+            <span class="au-checkbox__state-layer">
+                <span class="au-checkbox__box">
+                    <svg class="au-checkbox__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path class="au-checkbox__check" d="M4 12l6 6L20 6"/>
+                        <line class="au-checkbox__indeterminate" x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
             </span>
             <span class="au-checkbox__label">${label}</span>
         `;
@@ -99,11 +102,23 @@ export class AuCheckbox extends AuElement {
 
     /** @private */
     #updateState() {
+        const stateLayer = this.querySelector('.au-checkbox__state-layer');
         const box = this.querySelector('.au-checkbox__box');
         const icon = this.querySelector('.au-checkbox__icon');
         const checkPath = this.querySelector('.au-checkbox__check');
         const indeterminateLine = this.querySelector('.au-checkbox__indeterminate');
         const label = this.querySelector('.au-checkbox__label');
+
+        // MD3: 40dp circular state layer for ripple confinement
+        if (stateLayer) {
+            stateLayer.style.cssText = `
+                width: 40px; height: 40px;
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                position: relative; overflow: hidden;
+                flex-shrink: 0;
+            `;
+        }
 
         const isDisabled = this.has('disabled');
         const isChecked = this.has('checked');

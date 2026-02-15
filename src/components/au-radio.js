@@ -45,7 +45,8 @@ export class AuRadioGroup extends AuElement {
                 radio = radio.parentElement;
             }
             if (radio && !radio.hasAttribute('disabled')) {
-                createRipple(radio, e);
+                const stateLayer = radio.querySelector('.au-radio__state-layer');
+                if (stateLayer) createRipple(stateLayer, e, { centered: true });
             }
         });
 
@@ -149,8 +150,10 @@ export class AuRadio extends AuElement {
         }
 
         this.innerHTML = html`
-            <span class="au-radio__circle">
-                <span class="au-radio__dot"></span>
+            <span class="au-radio__state-layer">
+                <span class="au-radio__circle">
+                    <span class="au-radio__dot"></span>
+                </span>
             </span>
             <span class="au-radio__label">${this.#labelText}</span>
         `;
@@ -180,6 +183,7 @@ export class AuRadio extends AuElement {
 
     /** @private */
     #updateState() {
+        const stateLayer = this.querySelector('.au-radio__state-layer');
         const circle = this.querySelector('.au-radio__circle');
         const dot = this.querySelector('.au-radio__dot');
         const label = this.querySelector('.au-radio__label');
@@ -188,6 +192,17 @@ export class AuRadio extends AuElement {
 
         // Update cursor
         this.style.cursor = isDisabled ? 'not-allowed' : 'pointer';
+
+        // MD3: 40dp circular state layer for ripple confinement
+        if (stateLayer) {
+            stateLayer.style.cssText = `
+                width: 40px; height: 40px;
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                position: relative; overflow: hidden;
+                flex-shrink: 0;
+            `;
+        }
 
         if (circle) {
             circle.style.width = '20px';

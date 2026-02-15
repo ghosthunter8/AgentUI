@@ -59,7 +59,10 @@ describe('au-switch Unit Tests', () => {
         body.appendChild(el);
         const thumb = el.querySelector('.au-switch__thumb');
         expect(thumb).not.toBeNull();
-        expect(thumb.parentElement.classList.contains('au-switch__track')).toBe(true);
+        // Thumb is inside state-layer, which is inside track
+        const stateLayer = thumb.parentElement;
+        expect(stateLayer.classList.contains('au-switch__state-layer')).toBe(true);
+        expect(stateLayer.parentElement.classList.contains('au-switch__track')).toBe(true);
     });
 
     test('should render label when label attribute set', () => {
@@ -158,11 +161,12 @@ describe('au-switch Unit Tests', () => {
     test('thumb position should change for checked/unchecked', () => {
         const el = document.createElement('au-switch');
         body.appendChild(el);
-        const thumb = el.querySelector('.au-switch__thumb');
-        const offLeft = thumb.style.left;
+        // Position is now on the state layer (which wraps the thumb)
+        const stateLayer = el.querySelector('.au-switch__state-layer');
+        const offLeft = stateLayer.style.left;
 
         el.setAttribute('checked', '');
-        const onLeft = thumb.style.left;
+        const onLeft = stateLayer.style.left;
 
         expect(offLeft).not.toBe(onLeft);
     });
