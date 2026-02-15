@@ -13,6 +13,7 @@
  */
 
 import { AuElement, define } from '../core/AuElement.js';
+import { attachRipple } from '../core/ripple.js';
 
 /**
  * MD3 Tabs component with sliding indicator animation.
@@ -129,6 +130,8 @@ export class AuTab extends AuElement {
     connectedCallback() {
         super.connectedCallback();
         this.setAttribute('tabindex', '0');
+        // MD3: tabs have unbounded ripple on press
+        this._rippleCleanup = attachRipple(this);
     }
 
     /** @override */

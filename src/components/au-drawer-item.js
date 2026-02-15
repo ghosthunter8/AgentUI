@@ -10,6 +10,7 @@
 
 import { AuElement, define } from '../core/AuElement.js';
 import { html, safe } from '../core/utils.js';
+import { attachRipple } from '../core/ripple.js';
 // Import AuIcon to ensure it's registered
 import './au-icon.js';
 
@@ -88,6 +89,7 @@ export class AuDrawerItem extends AuElement {
         }
         super.connectedCallback();
         this._setupListeners();
+        this._setupRipple();
 
         // Keyboard accessibility
         this.setAttribute('tabindex', '0');
@@ -105,6 +107,15 @@ export class AuDrawerItem extends AuElement {
     /** @private */
     _setupListeners() {
         this.listen(this, 'click', this._handleClick.bind(this));
+    }
+
+    /** @private */
+    _setupRipple() {
+        if (this.disabled) return;
+        const link = this.querySelector('.au-drawer-item-link');
+        if (link) {
+            this._rippleCleanup = attachRipple(link);
+        }
     }
 
     /** @private */

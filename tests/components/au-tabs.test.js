@@ -212,4 +212,40 @@ describe('au-tabs Unit Tests', () => {
             expect(eventDetail.index).toBe(1);
         }
     });
+
+    // ========================================
+    // MD3 RIPPLE — Tabs must have ripple feedback
+    // ========================================
+    describe('MD3 ripple on tabs', () => {
+
+        test('au-tab should have overflow hidden for ripple confinement', () => {
+            const el = document.createElement('au-tabs');
+            el.innerHTML = '<au-tab>Tab 1</au-tab><au-tab>Tab 2</au-tab>';
+            body.appendChild(el);
+
+            const tab = el.querySelector('au-tab');
+            expect(tab.style.overflow).toBe('hidden');
+        });
+
+        test('au-tab should have position relative for ripple', () => {
+            const el = document.createElement('au-tabs');
+            el.innerHTML = '<au-tab>Tab 1</au-tab><au-tab>Tab 2</au-tab>';
+            body.appendChild(el);
+
+            const tab = el.querySelector('au-tab');
+            expect(tab.style.position).toBe('relative');
+        });
+
+        test('au-tab should have ripple attached (overflow + position set by attachRipple)', () => {
+            const el = document.createElement('au-tabs');
+            el.innerHTML = '<au-tab>Tab 1</au-tab><au-tab>Tab 2</au-tab>';
+            body.appendChild(el);
+
+            const tab = el.querySelector('au-tab');
+            // attachRipple sets both overflow:hidden and position:relative
+            // These together confirm the ripple was properly registered
+            expect(tab.style.overflow).toBe('hidden');
+            expect(tab.style.position).toBe('relative');
+        });
+    });
 });

@@ -931,10 +931,14 @@
       "format": "esm"
     },
     "src/components/au-tabs.js": {
-      "bytes": 4186,
+      "bytes": 4338,
       "imports": [
         {
           "path": "../core/AuElement.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "../core/ripple.js",
           "kind": "import-statement"
         }
       ],
@@ -998,7 +1002,7 @@
       "format": "esm"
     },
     "src/components/au-drawer-item.js": {
-      "bytes": 6094,
+      "bytes": 6405,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1006,6 +1010,10 @@
         },
         {
           "path": "../core/utils.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "../core/ripple.js",
           "kind": "import-statement"
         },
         {
@@ -1412,7 +1420,7 @@
   },
   "outputs": {
     "./agentui.esm.js": {
-      "bytes": 184453,
+      "bytes": 184620,
       "inputs": {
         "src/core/AuElement.js": {
           "bytesInOutput": 6405
@@ -1433,10 +1441,10 @@
           "bytesInOutput": 1005
         },
         "src/core/ripple.js": {
-          "bytesInOutput": 1850
+          "bytesInOutput": 1848
         },
         "src/core/agent-api.js": {
-          "bytesInOutput": 11354
+          "bytesInOutput": 11356
         },
         "src/core/component-schema.js": {
           "bytesInOutput": 6835
@@ -1490,7 +1498,7 @@
           "bytesInOutput": 11169
         },
         "src/components/au-drawer-item.js": {
-          "bytesInOutput": 2785
+          "bytesInOutput": 2923
         },
         "src/components/au-bottom-nav.js": {
           "bytesInOutput": 1710
@@ -1529,7 +1537,7 @@
           "bytesInOutput": 1192
         },
         "src/components/au-tabs.js": {
-          "bytesInOutput": 1457
+          "bytesInOutput": 1485
         },
         "src/components/au-alert.js": {
           "bytesInOutput": 1465
@@ -1613,7 +1621,7 @@
           "bytesInOutput": 1790
         },
         "src/index.js": {
-          "bytesInOutput": 2217
+          "bytesInOutput": 2218
         }
       },
       "imports": [],
