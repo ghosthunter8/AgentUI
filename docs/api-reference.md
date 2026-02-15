@@ -7,9 +7,26 @@ import {
     Theme,           // Theme management
     bus,             // EventBus (LightBus)
     UIEvents,        // Standard event constants
-    showToast        // Toast notifications
+    showToast,       // Toast notifications
+    createStore,     // Reactive state management
+    html, safe, escapeHTML,  // XSS-safe HTML templates
+    whenReady        // Framework readiness
 } from 'agentui-wc';
+
+// Direct module imports for tree-shaking
+import { http, HttpError } from 'agentui-wc/core/http';
+import { Router } from 'agentui-wc/core/router';
+import { breakpoints } from 'agentui-wc/core/breakpoints';
+import { keyboard } from 'agentui-wc/core/keyboard';
+import { Z_INDEX } from 'agentui-wc/core/layers';
+import { rafScheduler, memo, debounce, throttle, domBatch, createVisibilityObserver, processInChunks } from 'agentui-wc/core/render';
+import { scheduleTask, yieldToMain, processWithYield, runBackground, afterPaint } from 'agentui-wc/core/scheduler';
+import { transition, transitionNamed, navigateWithTransition } from 'agentui-wc/core/transitions';
+import { attachRipple, RippleMixin } from 'agentui-wc/core/ripple';
+import { AgentAPI, getAuComponentTree, enableVisualMarkers, getMCPActions } from 'agentui-wc/core/agent-api';
 ```
+
+> **Detailed reference for all utilities:** [Core Utilities](./core-utilities.md)
 
 ---
 

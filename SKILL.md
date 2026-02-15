@@ -402,6 +402,246 @@ bus.on(UIEvents.MODAL_OPEN, () => console.log('Modal opened'));
 
 ---
 
+## 🌐 HTTP Client (`http`)
+
+> **Built-in fetch wrapper.** Base URLs, auth headers, isolated instances, typed errors.
+
+#### Basic CRUD
+```javascript
+import { http } from 'agentui-wc/core/http';
+
+const users = await http.get('/api/users');
+await http.post('/api/users', { name: 'John', email: 'j@x.com' });
+await http.put('/api/users/1', { name: 'Jane' });
+await http.del('/api/users/1');
+```
+
+#### Isolated API Client
+```javascript
+const api = http.create({
+    baseURL: 'https://api.example.com/v2',
+    headers: { 'Authorization': 'Bearer token123' }
+});
+
+// All requests use the base URL and headers
+const users = await api.get('/users');      // → https://api.example.com/v2/users
+await api.post('/users', { name: 'New' });  // Same auth header
+```
+
+#### Error Handling
+```javascript
+import { http, HttpError } from 'agentui-wc/core/http';
+
+try {
+    await http.get('/api/protected');
+} catch (err) {
+    if (err instanceof HttpError) {
+        if (err.status === 401) showToast('Please login', { severity: 'error' });
+        if (err.status === 404) showToast('Not found', { severity: 'warning' });
+    }
+}
+```
+
+#### API Reference
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `get` | `get(url)` → `Promise` | GET, auto-parses JSON |
+| `post` | `post(url, body)` → `Promise` | POST with JSON body |
+| `put` | `put(url, body)` → `Promise` | PUT with JSON body |
+| `del` | `del(url)` → `Promise` | DELETE |
+| `request` | `request(url, options)` → `Promise` | Custom request |
+| `create` | `create({ baseURL, headers })` → `HttpClient` | Isolated instance |
+
+---
+
+## ⚡ Render Performance
+
+> **DOM-aware utilities for smooth 60fps updates.** rAF batching, memoization, debounce/throttle, fastdom, lazy rendering.
+
+#### Batch DOM Updates
+```javascript
+import { rafScheduler } from 'agentui-wc/core/render';
+
+// Multiple schedule() calls in the same tick → single rAF frame
+items.forEach(item => {
+    rafScheduler.schedule(() => {
+        item.el.style.transform = `translateX(${item.x}px)`;
+    });
+});
+```
+
+#### Memoize Expensive Computations
+```javascript
+import { memo } from 'agentui-wc/core/render';
+
+const computeLayout = memo((items) => {
+    return items.map(i => calculatePosition(i));
+}, { maxSize: 50 });  // LRU: keeps last 50 results
+```
+
+#### Debounce / Throttle
+```javascript
+import { debounce, throttle } from 'agentui-wc/core/render';
+
+// Search input — wait for 300ms of silence
+const onSearch = debounce((query) => fetchResults(query), 300);
+searchInput.addEventListener('au-input', (e) => onSearch(e.detail.value));
+
+// Scroll handler — max 1 call per 16ms (60fps)
+const onScroll = throttle(() => updateStickyHeader(), 16);
+window.addEventListener('scroll', onScroll);
+```
+
+#### Prevent Layout Thrashing
+```javascript
+import { domBatch } from 'agentui-wc/core/render';
+
+// ❌ Bad — causes reflow on every iteration
+items.forEach(el => {
+    const h = el.offsetHeight;       // READ → reflow
+    el.style.height = `${h * 2}px`; // WRITE → invalidate
+});
+
+// ✅ Good — reads first, then writes
+items.forEach(el => {
+    domBatch.read(() => { el._h = el.offsetHeight; });
+    domBatch.write(() => { el.style.height = `${el._h * 2}px`; });
+});
+```
+
+#### Process Large Arrays Without Blocking
+```javascript
+import { processInChunks } from 'agentui-wc/core/render';
+
+// Process 10,000 rows, yielding every 100
+await processInChunks(allRows, (row, index) => {
+    renderTableRow(row, index);
+}, 100);
+// The browser stays responsive between chunks
+```
+
+#### Lazy Render On Scroll
+```javascript
+import { createVisibilityObserver } from 'agentui-wc/core/render';
+
+const observer = createVisibilityObserver((el) => {
+    el.innerHTML = renderCard(el.dataset);
+    el.classList.add('loaded');
+}, { rootMargin: '200px' });  // Pre-load 200px ahead
+
+document.querySelectorAll('.placeholder').forEach(el => observer.observe(el));
+```
+
+---
+
+## 🗓️ Task Scheduling
+
+> **Priority-based scheduling via `scheduler.postTask()`.** Automatic fallback to `setTimeout`.
+
+#### Priority Levels
+```javascript
+import { scheduleTask } from 'agentui-wc/core/scheduler';
+
+// Highest — user is waiting for this
+await scheduleTask(() => validateForm(), 'user-blocking');
+
+// Normal — visible updates
+await scheduleTask(() => updateChart(), 'user-visible');
+
+// Lowest — can wait
+await scheduleTask(() => sendAnalytics(), 'background');
+```
+
+#### Yield to Main Thread
+```javascript
+import { yieldToMain } from 'agentui-wc/core/scheduler';
+
+// Long loop — yield periodically to keep UI smooth
+async function processAll(items) {
+    for (let i = 0; i < items.length; i++) {
+        processItem(items[i]);
+        if (i % 50 === 0) await yieldToMain();
+    }
+}
+```
+
+#### Process List with Auto-Yield
+```javascript
+import { processWithYield } from 'agentui-wc/core/scheduler';
+
+await processWithYield(thousandCards, (card) => {
+    renderCard(card);
+}, 50);  // Yield every 50 items
+```
+
+#### Background Tasks + Measure After Paint
+```javascript
+import { runBackground, afterPaint } from 'agentui-wc/core/scheduler';
+
+// Non-urgent work during idle time
+runBackground(() => prefetchNextPage());
+
+// Measure layout after browser has painted
+await afterPaint();
+const rect = element.getBoundingClientRect();
+```
+
+---
+
+## 🧭 SPA Router
+
+> **Hash-based routing with `:param` support.** Zero dependencies, chainable API.
+
+#### Route Registration
+```javascript
+import { Router } from 'agentui-wc/core/router';
+
+Router
+    .on('/', () => renderHome())
+    .on('/about', () => renderAbout())
+    .on('/user/:id', ({ id }) => renderUser(id))
+    .on('/user/:id/post/:postId', ({ id, postId }) => renderPost(id, postId))
+    .notFound((path) => render404(path))
+    .start();
+```
+
+#### Navigation
+```javascript
+Router.navigate('/user/42');      // Navigate programmatically
+console.log(Router.current);     // '/user/42'
+```
+
+#### Router + Store + Transitions
+```javascript
+import { Router } from 'agentui-wc/core/router';
+import { createStore } from 'agentui-wc';
+import { transition } from 'agentui-wc/core/transitions';
+
+const store = createStore({ currentPage: 'home' });
+
+Router
+    .on('/', () => loadPage('home'))
+    .on('/settings', () => loadPage('settings'))
+    .start();
+
+async function loadPage(name) {
+    store.state.currentPage = name;
+    const html = await fetch(`/content/${name}.html`).then(r => r.text());
+    await transition(() => {
+        document.getElementById('content').innerHTML = html;
+    });
+}
+```
+
+#### Cleanup
+```javascript
+Router.stop();     // Remove listener, keep routes
+Router.destroy();  // Full cleanup (routes + listener)
+```
+
+---
+
 ## 🔗 Advanced Patterns (Store + Components)
 
 > **`createStore()` shines when connecting app-level state to UI components.**

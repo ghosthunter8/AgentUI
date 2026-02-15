@@ -498,6 +498,232 @@ this.style.zIndex = Z_INDEX.modal;
 | `overlay` | 9999 | Full-screen overlays |
 | `devtools` | 999999 | Agent dev tools (always on top) |
 
+### HTTP Client
+
+```javascript
+import { http, HttpError } from 'agentui-wc/core/http';
+
+// Quick requests
+const data = await http.get('/api/users');
+await http.post('/api/users', { name: 'John' });
+await http.put('/api/users/1', { name: 'Jane' });
+await http.del('/api/users/1');
+
+// Isolated client with base URL + auth headers
+const api = http.create({
+    baseURL: 'https://api.example.com/v2',
+    headers: { 'Authorization': 'Bearer token123' }
+});
+const users = await api.get('/users');
+```
+
+**Error Handling:**
+```javascript
+try {
+    await http.get('/api/protected');
+} catch (err) {
+    if (err instanceof HttpError) {
+        console.log(err.status, err.statusText, err.body);
+    }
+}
+```
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `get` | `get(url)` → `Promise` | GET, auto-parses JSON |
+| `post` | `post(url, body)` → `Promise` | POST with JSON body |
+| `put` | `put(url, body)` → `Promise` | PUT with JSON body |
+| `del` | `del(url)` → `Promise` | DELETE |
+| `request` | `request(url, options)` → `Promise` | Custom request |
+| `create` | `create({ baseURL, headers })` → `HttpClient` | Isolated instance |
+
+### Render Utilities (Performance)
+
+```javascript
+import { rafScheduler, memo, debounce, throttle, domBatch, createVisibilityObserver, processInChunks } from 'agentui-wc/core/render';
+```
+
+```javascript
+// Batch DOM updates into single rAF frame
+rafScheduler.schedule(() => el.style.transform = 'translateX(10px)');
+
+// Memoize with LRU eviction
+const cached = memo(expensiveFn, { maxSize: 100 });
+
+// Debounce/throttle
+const onResize = debounce(() => recalculate(), 200);
+const onScroll = throttle(() => updatePosition(), 16);
+
+// Prevent layout thrashing (fastdom pattern)
+domBatch.read(() => { h = el.offsetHeight; });
+domBatch.write(() => { el.style.height = `${h * 2}px`; });
+
+// Lazy rendering via IntersectionObserver
+const obs = createVisibilityObserver((el) => el.classList.add('visible'));
+document.querySelectorAll('.card').forEach(el => obs.observe(el));
+
+// Non-blocking processing of large arrays
+await processInChunks(largeArray, (item) => renderRow(item), 100);
+```
+
+| Export | Signature | Description |
+|--------|-----------|-------------|
+| `rafScheduler` | `.schedule(callback)` | Batch into single rAF |
+| `memo` | `memo(fn, { maxSize? })` | Memoize with LRU |
+| `debounce` | `debounce(fn, delay=100)` | Delay until silence |
+| `throttle` | `throttle(fn, limit=100)` | Max one call per limit |
+| `domBatch` | `.read(fn)` / `.write(fn)` | Prevent layout thrashing |
+| `createVisibilityObserver` | `(onVisible, opts?)` | Lazy rendering |
+| `processInChunks` | `(items, fn, chunkSize=100)` | Yielding iteration |
+
+### Task Scheduler (Priority-Based)
+
+```javascript
+import { scheduleTask, yieldToMain, processWithYield, runBackground, afterPaint } from 'agentui-wc/core/scheduler';
+
+// Priority: 'user-blocking' | 'user-visible' | 'background'
+await scheduleTask(() => validateForm(), 'user-blocking');
+await scheduleTask(() => updateAnalytics(), 'background');
+
+// Yield to let browser paint during long tasks
+for (const item of items) {
+    processItem(item);
+    await yieldToMain();
+}
+
+// Process large lists with automatic yielding
+await processWithYield(thousandItems, (item) => renderCard(item), 50);
+
+// Non-urgent work (idle time)
+runBackground(() => preCacheImages());
+
+// Wait for next paint, then measure
+await afterPaint();
+const rect = element.getBoundingClientRect();
+```
+
+| Function | Description |
+|----------|-------------|
+| `scheduleTask(fn, priority?)` | Schedule with priority |
+| `yieldToMain()` | Yield main thread to browser |
+| `processWithYield(items, fn, chunk?)` | Chunked with yield |
+| `runBackground(fn)` | Run during idle |
+| `afterPaint()` | Wait for next paint |
+
+### SPA Router
+
+```javascript
+import { Router } from 'agentui-wc/core/router';
+
+Router
+    .on('/', () => renderHome())
+    .on('/about', () => renderAbout())
+    .on('/user/:id', ({ id }) => renderUser(id))
+    .notFound((path) => render404(path))
+    .start();
+
+// Navigate programmatically
+Router.navigate('/user/42');
+console.log(Router.current); // '/user/42'
+
+// Cleanup
+Router.stop();     // Remove listener, keep routes
+Router.destroy();  // Full cleanup
+```
+
+| Method | Description |
+|--------|-------------|
+| `on(path, handler)` | Register route (chainable). Supports `:param` |
+| `notFound(handler)` | Set 404 handler |
+| `navigate(path)` | Navigate to path |
+| `current` | Current route path (getter) |
+| `start()` / `stop()` | Start/stop listening |
+| `destroy()` | Full cleanup |
+
+### HTML Safety (XSS Prevention)
+
+```javascript
+import { html, safe, escapeHTML } from 'agentui-wc';
+
+// Auto-escapes all interpolated values
+const userInput = '<script>alert("xss")</script>';
+element.innerHTML = html`<h2>${userInput}</h2>`;
+// → <h2>&lt;script&gt;alert("xss")&lt;/script&gt;</h2>
+
+// Mark trusted HTML with safe()
+const icon = '<au-icon name="home"></au-icon>';
+element.innerHTML = html`<div>${safe(icon)}</div>`;
+
+// Composable — nested templates compose safely
+const items = ['One', 'Two', '<Three>'];
+element.innerHTML = html`<ul>${items.map(i => html`<li>${i}</li>`)}</ul>`;
+```
+
+| Function | Description |
+|----------|-------------|
+| `` html`...${val}...` `` | Tagged template — auto-escapes |
+| `safe(str)` | Mark trusted HTML (no escaping) |
+| `escapeHTML(str)` | Escape `& < > " '` |
+
+### Ripple Effects (MD3)
+
+```javascript
+import { attachRipple, createRipple, RippleMixin } from 'agentui-wc/core/ripple';
+
+// Attach to any element — auto-ripple on click/touch
+const cleanup = attachRipple(myButton);
+cleanup();  // Remove when done
+
+// Manual ripple at coordinates
+createRipple(element, mouseEvent);
+
+// Component mixin — auto-attaches ripple lifecycle
+class MyButton extends RippleMixin(AuElement) {
+    // Ripple added on connect, cleaned on disconnect
+}
+```
+
+### Agent API (MCP + Visual Markers)
+
+```javascript
+import { getAuComponentTree, describe, enableVisualMarkers, getMCPActions, findByLabel } from 'agentui-wc/core/agent-api';
+
+// DOM distillation — get simplified component tree
+const tree = getAuComponentTree(document.body, {
+    visibleOnly: true,
+    interactiveOnly: true
+});
+// Returns: [{ tag, id, label, description, state, actions, rect, interactive, visible }]
+
+// Natural language description
+describe('#submit-btn'); // → 'Button "Submit". Click to activate.'
+
+// Visual markers for screenshot-based AI
+const markers = enableVisualMarkers({ markerStyle: 'badge' });
+// Elements get labeled: [B1] Save, [B2] Cancel, [I1] Email
+const el = getMarkerElement('B1');  // Resolve marker to element
+
+// MCP-compatible action schema
+const actions = getMCPActions();
+// Returns schema for: click_button, fill_input, toggle_checkbox,
+// select_option, open_modal, close_modal, select_tab, enable_visual_markers
+
+// Fuzzy search by label
+const matches = findByLabel('Submit');
+```
+
+| Function | Description |
+|----------|-------------|
+| `getAuComponentTree(root?, opts?)` | Distilled component tree |
+| `describe(el\|selector)` | Natural language description |
+| `findByLabel(query, root?)` | Fuzzy label search |
+| `getRegisteredComponents()` | Map of all au-* elements |
+| `enableVisualMarkers(opts?)` | Add overlay labels |
+| `disableVisualMarkers()` | Remove overlays |
+| `getMarkerElement(id)` | Element by marker ID |
+| `getMarkerMap()` | All marker mappings |
+| `getMCPActions()` | MCP action schema |
+
 ### Confirm Dialog (Agent-Friendly)
 ```javascript
 import { auConfirm } from 'agentui-wc';
