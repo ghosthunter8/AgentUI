@@ -7,6 +7,7 @@
 import { AuElement, define } from '../core/AuElement.js';
 import { html } from '../core/utils.js';
 import { createRipple } from '../core/ripple.js';
+import { updateFormCursor } from '../core/form-styles.js';
 
 /**
  * MD3 Toggle Switch component.
@@ -69,7 +70,7 @@ export class AuSwitch extends AuElement {
         this.style.display = 'inline-flex';
         this.style.alignItems = 'center';
         this.style.gap = '12px';
-        this.style.cursor = this.has('disabled') ? 'not-allowed' : 'pointer';
+        updateFormCursor(this, this.has('disabled'));
 
         this.#updateState();
     }
@@ -88,7 +89,7 @@ export class AuSwitch extends AuElement {
         const isDisabled = this.has('disabled');
 
         // Update cursor
-        this.style.cursor = isDisabled ? 'not-allowed' : 'pointer';
+        updateFormCursor(this, isDisabled);
 
         if (track) {
             track.style.width = '52px';

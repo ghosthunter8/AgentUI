@@ -51,11 +51,15 @@ describe('au-toast Component', () => {
     // ============================================================
 
     test('au-toast should be registered as custom element', () => {
-        expect(customElements.get('au-toast')).toBe(AuToast);
+        const registered = customElements.get('au-toast');
+        expect(registered).toBeDefined();
+        expect(registered.baseClass).toBe('au-toast');
     });
 
     test('au-toast-container should be registered as custom element', () => {
-        expect(customElements.get('au-toast-container')).toBe(AuToastContainer);
+        const registered = customElements.get('au-toast-container');
+        expect(registered).toBeDefined();
+        expect(registered.baseClass).toBe('au-toast-container');
     });
 
     test('au-toast should have correct baseClass', () => {

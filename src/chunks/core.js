@@ -72,6 +72,7 @@ import { bus, UIEvents, showToast } from '../core/bus.js';
 import { auConfirm } from '../components/au-confirm.js';
 import { AuElement } from '../core/AuElement.js';
 import { getAuComponentTree, describe as describeComponent, findByLabel, getRegisteredComponents } from '../core/agent-api.js';
+import { loadDescriptions as _loadDescriptions, createDiscoverAll } from '../core/discovery.js';
 
 if (typeof window !== 'undefined' && !window.AgentUI) {
     window.AgentUI = {
@@ -94,60 +95,11 @@ if (typeof window !== 'undefined' && !window.AgentUI) {
 
         // 🤖 AI AGENT DISCOVERY
         // Lazy-loads the describe catalog — zero cost until called
-        async discoverAll() {
-            if (!AuElement._describeCatalog) {
-                await this.loadDescriptions();
-            }
-            const components = {};
-            const tags = [
-                'au-button', 'au-input', 'au-textarea', 'au-card', 'au-modal',
-                'au-alert', 'au-toast', 'au-checkbox', 'au-switch', 'au-radio',
-                'au-dropdown', 'au-tabs', 'au-tab', 'au-chip', 'au-badge',
-                'au-avatar', 'au-progress', 'au-spinner', 'au-skeleton',
-                'au-tooltip', 'au-table', 'au-datatable', 'au-form',
-                'au-stack', 'au-grid', 'au-container', 'au-divider',
-                'au-drawer', 'au-sidebar', 'au-navbar', 'au-bottom-nav',
-                'au-layout', 'au-router', 'au-page', 'au-theme-toggle',
-                'au-splash', 'au-virtual-list', 'au-lazy', 'au-repeat',
-                'au-fetch', 'au-confirm', 'au-schema-form', 'au-prompt-ui',
-                'au-error-boundary', 'au-code', 'au-callout', 'au-icon',
-                'au-api-table', 'au-example', 'au-doc-page'
-            ];
-            for (const tag of tags) {
-                const cls = customElements.get(tag);
-                if (cls?.describe) {
-                    components[tag] = cls.describe();
-                }
-            }
-            return components;
-        },
+        discoverAll: createDiscoverAll(AuElement),
 
         // Pre-load describe catalog via fetch
         async loadDescriptions() {
-            if (AuElement._describeCatalog) return;
-            const scripts = document.querySelectorAll('script[src]');
-            let baseUrl = '';
-            for (const s of scripts) {
-                if (s.src.includes('agentui') || s.src.includes('chunks')) {
-                    baseUrl = s.src.substring(0, s.src.lastIndexOf('/') + 1);
-                    // If we're in chunks/, go up one level
-                    if (baseUrl.includes('/chunks/')) {
-                        baseUrl = baseUrl.replace('/chunks/', '/');
-                    }
-                    break;
-                }
-            }
-            const url = baseUrl + 'describe-catalog.json';
-            try {
-                const res = await fetch(url);
-                if (res.ok) {
-                    AuElement._describeCatalog = await res.json();
-                }
-            } catch (e) {
-                if (window.AGENTUI_DEBUG) {
-                    console.warn('[AgentUI] Could not load describe catalog from', url);
-                }
-            }
+            await _loadDescriptions(AuElement, { checkChunks: true });
         }
     };
 

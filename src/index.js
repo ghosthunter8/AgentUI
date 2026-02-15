@@ -262,6 +262,8 @@ import { getComponentSchema, getAllSchemas, getSchemaComponents, getSchemaQuickR
 import { getErrors, clearErrors } from './components/au-error-boundary.js';
 import { auConfirm } from './components/au-confirm.js';
 import { AuElement } from './core/AuElement.js';
+import { ALL_COMPONENT_TAGS } from './core/constants.js';
+import { loadDescriptions as _loadDescriptions, createDiscoverAll } from './core/discovery.js';
 
 if (typeof window !== 'undefined') {
     window.AgentUI = {
@@ -310,59 +312,12 @@ if (typeof window !== 'undefined') {
         // 🤖 AI AGENT DISCOVERY (2026)
         // Use this to get ALL component info in one call
         // Lazy-loads the describe catalog — zero cost until called
-        async discoverAll() {
-            // Lazy-load full metadata catalog (only on first call)
-            if (!AuElement._describeCatalog) {
-                await this.loadDescriptions();
-            }
-            const components = {};
-            const tags = [
-                'au-button', 'au-input', 'au-textarea', 'au-card', 'au-modal',
-                'au-alert', 'au-toast', 'au-checkbox', 'au-switch', 'au-radio',
-                'au-dropdown', 'au-tabs', 'au-tab', 'au-chip', 'au-badge',
-                'au-avatar', 'au-progress', 'au-spinner', 'au-skeleton',
-                'au-tooltip', 'au-table', 'au-datatable', 'au-form',
-                'au-stack', 'au-grid', 'au-container', 'au-divider',
-                'au-drawer', 'au-sidebar', 'au-navbar', 'au-bottom-nav',
-                'au-layout', 'au-router', 'au-page', 'au-theme-toggle',
-                'au-splash', 'au-virtual-list', 'au-lazy', 'au-repeat',
-                'au-fetch', 'au-confirm', 'au-schema-form', 'au-prompt-ui',
-                'au-error-boundary', 'au-code', 'au-callout', 'au-icon',
-                'au-api-table', 'au-example', 'au-doc-page'
-            ];
-            for (const tag of tags) {
-                const cls = customElements.get(tag);
-                if (cls?.describe) {
-                    components[tag] = cls.describe();
-                }
-            }
-            return components;
-        },
+        discoverAll: createDiscoverAll(AuElement),
 
         // 🤖 Pre-load describe catalog without querying components
         // Uses fetch() to keep catalog OUT of the main bundle (zero cost for regular users)
         async loadDescriptions() {
-            if (AuElement._describeCatalog) return;
-            // Resolve catalog URL relative to the AgentUI script
-            const scripts = document.querySelectorAll('script[src]');
-            let baseUrl = '';
-            for (const s of scripts) {
-                if (s.src.includes('agentui')) {
-                    baseUrl = s.src.substring(0, s.src.lastIndexOf('/') + 1);
-                    break;
-                }
-            }
-            const url = baseUrl + 'describe-catalog.json';
-            try {
-                const res = await fetch(url);
-                if (res.ok) {
-                    AuElement._describeCatalog = await res.json();
-                }
-            } catch (e) {
-                if (window.AGENTUI_DEBUG) {
-                    console.warn('[AgentUI] Could not load describe catalog from', url);
-                }
-            }
+            await _loadDescriptions(AuElement);
         }
     };
 

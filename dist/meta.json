@@ -1,7 +1,7 @@
 {
   "inputs": {
     "src/index.js": {
-      "bytes": 15636,
+      "bytes": 13607,
       "imports": [
         {
           "path": "/Users/giuseppescottolavina/Documents/PERSONAL/AgentUI/src/core/AuElement.js",
@@ -632,6 +632,16 @@
           "path": "/Users/giuseppescottolavina/Documents/PERSONAL/AgentUI/src/core/AuElement.js",
           "kind": "import-statement",
           "original": "./core/AuElement.js"
+        },
+        {
+          "path": "/Users/giuseppescottolavina/Documents/PERSONAL/AgentUI/src/core/constants.js",
+          "kind": "import-statement",
+          "original": "./core/constants.js"
+        },
+        {
+          "path": "/Users/giuseppescottolavina/Documents/PERSONAL/AgentUI/src/core/discovery.js",
+          "kind": "import-statement",
+          "original": "./core/discovery.js"
         }
       ],
       "format": "esm"
@@ -955,7 +965,7 @@
       "format": "esm"
     },
     "src/components/au-icon.js": {
-      "bytes": 14516,
+      "bytes": 14353,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1033,6 +1043,16 @@
       ],
       "format": "esm"
     },
+    "src/core/discovery.js": {
+      "bytes": 2253,
+      "imports": [
+        {
+          "path": "./constants.js",
+          "kind": "import-statement"
+        }
+      ],
+      "format": "esm"
+    },
     "src/components/au-chip.js": {
       "bytes": 5306,
       "imports": [
@@ -1090,7 +1110,7 @@
       "format": "esm"
     },
     "src/components/au-switch.js": {
-      "bytes": 6688,
+      "bytes": 6699,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1102,6 +1122,10 @@
         },
         {
           "path": "../core/ripple.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "../core/form-styles.js",
           "kind": "import-statement"
         }
       ],
@@ -1276,7 +1300,7 @@
       "format": "esm"
     },
     "src/components/au-checkbox.js": {
-      "bytes": 8736,
+      "bytes": 8232,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1289,6 +1313,11 @@
         {
           "path": "../core/ripple.js",
           "kind": "import-statement"
+        },
+        {
+          "path": "/Users/giuseppescottolavina/Documents/PERSONAL/AgentUI/src/core/form-styles.js",
+          "kind": "import-statement",
+          "original": "../core/form-styles.js"
         }
       ],
       "format": "esm"
@@ -1355,6 +1384,11 @@
       ],
       "format": "esm"
     },
+    "src/core/constants.js": {
+      "bytes": 1086,
+      "imports": [],
+      "format": "esm"
+    },
     "src/core/ripple.js": {
       "bytes": 5865,
       "imports": [],
@@ -1390,7 +1424,7 @@
       "format": "esm"
     },
     "src/components/au-radio.js": {
-      "bytes": 8438,
+      "bytes": 7934,
       "imports": [
         {
           "path": "../core/AuElement.js",
@@ -1402,6 +1436,10 @@
         },
         {
           "path": "../core/ripple.js",
+          "kind": "import-statement"
+        },
+        {
+          "path": "../core/form-styles.js",
           "kind": "import-statement"
         }
       ],
@@ -1416,11 +1454,16 @@
       "bytes": 8098,
       "imports": [],
       "format": "esm"
+    },
+    "src/core/form-styles.js": {
+      "bytes": 1672,
+      "imports": [],
+      "format": "esm"
     }
   },
   "outputs": {
     "./agentui.esm.js": {
-      "bytes": 184620,
+      "bytes": 184148,
       "inputs": {
         "src/core/AuElement.js": {
           "bytesInOutput": 6405
@@ -1444,7 +1487,7 @@
           "bytesInOutput": 1848
         },
         "src/core/agent-api.js": {
-          "bytesInOutput": 11356
+          "bytesInOutput": 11358
         },
         "src/core/component-schema.js": {
           "bytesInOutput": 6835
@@ -1495,7 +1538,7 @@
           "bytesInOutput": 4536
         },
         "src/components/au-icon.js": {
-          "bytesInOutput": 11169
+          "bytesInOutput": 11047
         },
         "src/components/au-drawer-item.js": {
           "bytesInOutput": 2923
@@ -1518,14 +1561,17 @@
         "src/components/au-dropdown.js": {
           "bytesInOutput": 4727
         },
+        "src/core/form-styles.js": {
+          "bytesInOutput": 508
+        },
         "src/components/au-checkbox.js": {
-          "bytesInOutput": 4195
+          "bytesInOutput": 3690
         },
         "src/components/au-switch.js": {
-          "bytesInOutput": 3395
+          "bytesInOutput": 3327
         },
         "src/components/au-radio.js": {
-          "bytesInOutput": 3957
+          "bytesInOutput": 3452
         },
         "src/components/au-chip.js": {
           "bytesInOutput": 2363
@@ -1620,8 +1666,14 @@
         "src/components/au-doc-page.js": {
           "bytesInOutput": 1790
         },
+        "src/core/constants.js": {
+          "bytesInOutput": 639
+        },
+        "src/core/discovery.js": {
+          "bytesInOutput": 726
+        },
         "src/index.js": {
-          "bytesInOutput": 2218
+          "bytesInOutput": 1070
         }
       },
       "imports": [],

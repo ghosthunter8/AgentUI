@@ -14,6 +14,7 @@
 import { AuElement, define } from '../core/AuElement.js';
 import { html } from '../core/utils.js';
 import { createRipple } from '../core/ripple.js';
+import { applyFormControlLayout, applyStateLayerStyles, updateFormCursor } from '../core/form-styles.js';
 
 /**
  * MD3 Checkbox component with indeterminate state support.
@@ -79,13 +80,7 @@ export class AuCheckbox extends AuElement {
             <span class="au-checkbox__label">${label}</span>
         `;
 
-        this.style.display = 'inline-flex';
-        this.style.alignItems = 'center';
-        this.style.gap = '12px';  /* MD3: 12dp gap */
-        this.style.cursor = this.has('disabled') ? 'not-allowed' : 'pointer';
-        this.style.userSelect = 'none';
-        this.style.minHeight = '48px';  /* MD3: 48dp touch target */
-        this.style.padding = '0 4px';  /* Touch-friendly padding */
+        applyFormControlLayout(this, this.has('disabled'));
 
         this.#updateState();
     }
@@ -111,13 +106,7 @@ export class AuCheckbox extends AuElement {
 
         // MD3: 40dp circular state layer for ripple confinement
         if (stateLayer) {
-            stateLayer.style.cssText = `
-                width: 40px; height: 40px;
-                border-radius: 50%;
-                display: flex; align-items: center; justify-content: center;
-                position: relative; overflow: hidden;
-                flex-shrink: 0;
-            `;
+            applyStateLayerStyles(stateLayer);
         }
 
         const isDisabled = this.has('disabled');
@@ -127,7 +116,7 @@ export class AuCheckbox extends AuElement {
         // Visual priority: indeterminate > checked > unchecked
         const isFilled = isChecked || isIndeterminate;
 
-        this.style.cursor = isDisabled ? 'not-allowed' : 'pointer';
+        updateFormCursor(this, isDisabled);
 
         if (box) {
             box.style.width = '18px';  /* MD3: 18dp container */

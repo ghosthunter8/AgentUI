@@ -98,18 +98,37 @@ if (!globalThis.__testDomInitialized) {
     }
 
     // Fix dispatchEvent readonly eventPhase bug
-    const origDispatch = ElementProto.dispatchEvent;
-    if (origDispatch) {
-        ElementProto.dispatchEvent = function (event) {
+    // LinkedOM's dispatchEvent sets event.eventPhase which is readonly in strict mode.
+    // Document and HTMLElement inherit from different branches but share DOMEventTarget.
+    // We must patch the common ancestor so both document.dispatchEvent() and
+    // element.dispatchEvent() are covered.
+    const patchDispatch = (proto) => {
+        const orig = proto.dispatchEvent;
+        if (!orig || proto.__dispatchPatched) return;
+        proto.__dispatchPatched = true;
+        proto.dispatchEvent = function (event) {
             try {
-                return origDispatch.call(this, event);
+                return orig.call(this, event);
             } catch (e) {
-                if (e.message?.includes('eventPhase') || e.message?.includes('read only')) {
+                if (e.message?.includes('eventPhase') || e.message?.includes('readonly') || e.message?.includes('read only')) {
                     return true;
                 }
                 throw e;
             }
         };
+    };
+
+    // Patch HTMLElement chain
+    patchDispatch(ElementProto);
+
+    // Patch Document chain — walk up to find DOMEventTarget (owns dispatchEvent)
+    let docProto = Object.getPrototypeOf(dom.document);
+    while (docProto) {
+        if (Object.prototype.hasOwnProperty.call(docProto, 'dispatchEvent')) {
+            patchDispatch(docProto);
+            break;
+        }
+        docProto = Object.getPrototypeOf(docProto);
     }
 
     // Dialog API (showModal/close)

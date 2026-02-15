@@ -101,6 +101,48 @@ if (!iifeResult.success) {
 console.log('✅ IIFE bundle: dist/agentui.min.js');
 
 // ============================================
+// 2a. Slim IIFE Bundle (no agent modules)
+// ============================================
+const slimResult = await build({
+    entrypoints: ['./src/index-slim.js'],
+    outdir,
+    target: 'browser',
+    format: 'iife',
+    minify: true,
+    sourcemap: 'external',
+    drop: ['console.log', 'debugger'],
+    define: { 'process.env.NODE_ENV': '"production"' },
+    naming: { entry: 'agentui-slim.min.js' }
+});
+
+if (!slimResult.success) {
+    console.error('❌ Slim IIFE build failed:', slimResult.logs);
+    process.exit(1);
+}
+console.log('✅ Slim IIFE bundle: dist/agentui-slim.min.js (no agent modules)');
+
+// ============================================
+// 2b-agent. Agent-only IIFE Bundle
+// ============================================
+const agentResult = await build({
+    entrypoints: ['./src/index-agent.js'],
+    outdir,
+    target: 'browser',
+    format: 'iife',
+    minify: true,
+    sourcemap: 'external',
+    drop: ['console.log', 'debugger'],
+    define: { 'process.env.NODE_ENV': '"production"' },
+    naming: { entry: 'agentui-agent.min.js' }
+});
+
+if (!agentResult.success) {
+    console.error('❌ Agent IIFE build failed:', agentResult.logs);
+    process.exit(1);
+}
+console.log('✅ Agent IIFE bundle: dist/agentui-agent.min.js');
+
+// ============================================
 // 2b. Describe Catalog (separate JSON file for lazy loading via fetch)
 // ============================================
 

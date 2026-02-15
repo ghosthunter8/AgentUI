@@ -26,7 +26,7 @@
   <a href="./SECURITY.md"><img src="https://img.shields.io/badge/XSS-Safe-2ea44f?logo=shieldsdotio&logoColor=white" alt="XSS Safe"></a>
   <img src="https://img.shields.io/badge/CSP-Compatible-2ea44f?logo=shieldsdotio&logoColor=white" alt="CSP Compatible">
   <img src="https://img.shields.io/badge/eval()-None-2ea44f" alt="No eval()">
-  <img src="https://img.shields.io/badge/tests-1826-blue" alt="1826 Tests">
+  <img src="https://img.shields.io/badge/tests-1921-blue" alt="1921 Tests">
 </p>
 
 ---
@@ -133,7 +133,7 @@ Every architecture involves trade-offs. Here's what AgentUI optimizes for and wh
 
 | Metric | Value |
 |--------|-------|
-| **Tests** | 1826 (unit + E2E), 0 failures, 94 isolated test files |
+| **Tests** | 1921 (unit + E2E), 0 failures, 102 isolated test files |
 | **Security** | XSS-audited, CSP-compatible, no `eval()`, [full policy →](./SECURITY.md) |
 | **Memory** | Managed listeners (AbortController), zero leaks verified |
 | **DOM Speed** | 500 instantiations <8ms, 500 updates <3ms |
@@ -166,7 +166,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started, or [open a discussion](
 
 ## Status
 
-AgentUI is an **experimental** library (v0.1.x) built by a single developer. The 50 components and agent API are functional and tested (1826 tests), but this is a research project exploring runtime introspection for AI agents — not a production framework.
+AgentUI is an **experimental** library (v0.1.x) built by a single developer. The 50 components and agent API are functional and tested (1921 tests), but this is a research project exploring runtime introspection for AI agents — not a production framework.
 
 The core question being tested: **does runtime component introspection meaningfully reduce AI agent errors compared to static documentation?**
 
