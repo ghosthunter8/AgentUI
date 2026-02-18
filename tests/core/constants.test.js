@@ -12,9 +12,9 @@ describe('constants Module (OPT-5)', () => {
         expect(Array.isArray(ALL_COMPONENT_TAGS)).toBe(true);
     });
 
-    test('ALL_COMPONENT_TAGS should contain 50 known tags', async () => {
+    test('ALL_COMPONENT_TAGS should contain 56 known tags', async () => {
         const { ALL_COMPONENT_TAGS } = await import('../../src/core/constants.js');
-        expect(ALL_COMPONENT_TAGS.length).toBe(50);
+        expect(ALL_COMPONENT_TAGS.length).toBe(56);
     });
 
     test('ALL_COMPONENT_TAGS should include critical components', async () => {
